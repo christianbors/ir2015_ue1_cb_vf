@@ -13,3 +13,8 @@ Stemmer Library:
 * [Snowball Stemmer for Java](http://trimc-nlp.blogspot.co.at/2013/08/snowball-stemmer-for-java.html) - Based on Lovins stemming algorithm
 * [Lucene Snowball](http://mvnrepository.com/artifact/org.apache.lucene/lucene-snowball/3.0.3)
 * [Porter Stemmer](http://stackoverflow.com/questions/4397107/is-there-a-java-implementation-of-porter2-stemmer)
+
+### Tests
+
+JUnit Test Framework  
+Um besser mit JUnit arbeiten zu können, bitte [JUnit Generator](https://plugins.jetbrains.com/plugin/3064?pr=) zu IntelliJ hinzufügen

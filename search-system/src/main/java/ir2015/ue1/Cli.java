@@ -6,12 +6,7 @@ package ir2015.ue1;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.cli.BasicParser;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 
 public class Cli {
     private static final Logger log = Logger.getLogger(Cli.class.getName());
@@ -23,11 +18,45 @@ public class Cli {
         this.args = args;
 
         options.addOption("h", "help", false, "show help.");
-        options.addOption("v", "var", true, "Here you can set parameter .");
 
+        /*// Newsgroup indexing
+        Option indexScoring = OptionBuilder.withLongOpt("index-bag-of-words")
+                .withDescription("Index Scoring Methods: bag of words (bow), bi-gram (bg)")
+                .create("bow");
+        Option indexBiGram = OptionBuilder.withLongOpt("index-bi-gram")
+                .withDescription("Create an index with the bi-gram algorithm")
+                .create("bg");
+        options.addOption(indexBagOfWords);
+        options.addOption(indexBiGram);
+
+        // Vocabulary normalization
+        Option vocabulary = OptionBuilder.withArgName("technique")
+                .hasArg()
+                .withLongOpt("normalize")
+                .withDescription("Normalize vocabulary by applying a combination of " +
+                        "\"case-fold\", \"remove-stopwords\", \"stemming\"")
+                .create("n");
+        Option file      = OptionBuilder.withArgName("filename")
+                .hasArg()
+                .withDescription("input file for search system")
+                .withLongOpt("file")
+                .create("f");
+        options.addOption(vocabulary);
+        options.addOption(file);
+*/
+        // Search
+        Option searchParameter = OptionBuilder.withArgName("parameters")
+                .hasArgs()
+                .withLongOpt("parameter")
+                .create("p");
+        Option scoringMethod = OptionBuilder.withArgName("method")
+                .hasArgs()
+                .withLongOpt("scoring")
+                .withDescription("Scoring methods: \"case-fold\", \"remove-stopwords\", \"stemming\"")
+                .create("s");
     }
 
-    public void parse() {
+    public CommandLine parse() {
         CommandLineParser parser = new BasicParser();
 
         CommandLine cmd = null;
@@ -41,21 +70,21 @@ public class Cli {
                 log.log(Level.INFO, "Using cli argument -v=" + cmd.getOptionValue("v"));
                 // Whatever you want to do with the setting goes here
             } else {
-                log.log(Level.SEVERE, "MIssing v option");
+                log.log(Level.SEVERE, "Missing v option");
                 help();
             }
-
         } catch (ParseException e) {
-            log.log(Level.SEVERE, "Failed to parse comand line properties", e);
+            log.log(Level.SEVERE, "Failed to parse command line properties", e);
             help();
         }
+        return cmd;
     }
 
     private void help() {
         // This prints out some help
-        HelpFormatter formater = new HelpFormatter();
+        HelpFormatter formatter = new HelpFormatter();
 
-        formater.printHelp("Main", options);
+        formatter.printHelp("Search System", options);
         System.exit(0);
     }
 }
