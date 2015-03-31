@@ -1,5 +1,6 @@
 package ir2015.ue1.model;
 
+import com.google.gson.Gson;
 import ir2015.ue1.parser.Attributes;
 
 import java.util.ArrayList;
@@ -207,7 +208,9 @@ public class Newsgroup {
         this.text = text;
     }
 
-
+    public String toJson() {
+        return new Gson().toJson(this);
+    }
 
     public String toString()
     {
