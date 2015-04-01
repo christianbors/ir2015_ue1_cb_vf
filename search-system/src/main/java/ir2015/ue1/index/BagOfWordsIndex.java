@@ -1,7 +1,6 @@
 package ir2015.ue1.index;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
 import ir2015.ue1.model.Newsgroup;
 
 import java.io.FileNotFoundException;
@@ -14,23 +13,7 @@ import java.util.*;
  * Created by christianbors on 26/03/15.
  */
 public class BagOfWordsIndex {
-    /*
-    private String from;
-    private String subject;
-    private String messageid;
-    private String date;
-    private String organization;
-    private String lines;
-    private String replyto;
-    private String distribution;
-    private String followupto;
-    private String sender;
-    private String nntppostinghost;
-    private String articleid;
-    private String returnreceiptto;
-    private String nfid;
-    private String nffrom;
-     */
+
     private List<Newsgroup> documentList;
     private Map<String, Integer> textDictionary = new LinkedHashMap<String, Integer>();
     private Map<String, Integer> xrefDict = new LinkedHashMap<String, Integer>();
@@ -43,7 +26,6 @@ public class BagOfWordsIndex {
     private Map<String, Integer> messageidDict= new LinkedHashMap<String, Integer>();
     private Map<String, Integer> dateDict= new LinkedHashMap<String, Integer>();
     private Map<String, Integer> organizationDict= new LinkedHashMap<String, Integer>();
-    private Map<String, Integer> linesDict= new LinkedHashMap<String, Integer>();
     private Map<String, Integer> replytoDict= new LinkedHashMap<String, Integer>();
     private Map<String, Integer> distributionDict= new LinkedHashMap<String, Integer>();
     private Map<String, Integer> followuptoDict= new LinkedHashMap<String, Integer>();
@@ -65,7 +47,6 @@ public class BagOfWordsIndex {
     private List<List<Integer>> messageidOcc = new LinkedList<List<Integer>>();
     private List<List<Integer>> dateOcc = new LinkedList<List<Integer>>();
     private List<List<Integer>> organizationOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> linesOcc = new LinkedList<List<Integer>>();
     private List<List<Integer>> replytoOcc = new LinkedList<List<Integer>>();
     private List<List<Integer>> distributionOcc = new LinkedList<List<Integer>>();
     private List<List<Integer>> followuptoOcc = new LinkedList<List<Integer>>();
@@ -220,12 +201,12 @@ public class BagOfWordsIndex {
         return indexFile;
     }
 
-    public Map<String, Integer> getTextDictionary() {
-        return textDictionary;
+    public List<Newsgroup> getDocumentList() {
+        return documentList;
     }
 
-    public List<List<Integer>> getTextOccurrences() {
-        return textOccurrences;
+    public Map<String, Integer> getTextDictionary() {
+        return textDictionary;
     }
 
     public Map<String, Integer> getXrefDict() {
@@ -248,6 +229,66 @@ public class BagOfWordsIndex {
         return keywordsDict;
     }
 
+    public Map<String, Integer> getFromDict() {
+        return fromDict;
+    }
+
+    public Map<String, Integer> getSubjectDict() {
+        return subjectDict;
+    }
+
+    public Map<String, Integer> getMessageidDict() {
+        return messageidDict;
+    }
+
+    public Map<String, Integer> getDateDict() {
+        return dateDict;
+    }
+
+    public Map<String, Integer> getOrganizationDict() {
+        return organizationDict;
+    }
+
+    public Map<String, Integer> getReplytoDict() {
+        return replytoDict;
+    }
+
+    public Map<String, Integer> getDistributionDict() {
+        return distributionDict;
+    }
+
+    public Map<String, Integer> getFollowuptoDict() {
+        return followuptoDict;
+    }
+
+    public Map<String, Integer> getSenderDict() {
+        return senderDict;
+    }
+
+    public Map<String, Integer> getNntppostinghostDict() {
+        return nntppostinghostDict;
+    }
+
+    public Map<String, Integer> getArticleidDict() {
+        return articleidDict;
+    }
+
+    public Map<String, Integer> getReturnreceipttoDict() {
+        return returnreceipttoDict;
+    }
+
+    public Map<String, Integer> getNfidDict() {
+        return nfidDict;
+    }
+
+    public Map<String, Integer> getNffromDict() {
+        return nffromDict;
+    }
+
+    public List<List<Integer>> getTextOccurrences() {
+        return textOccurrences;
+    }
+
     public List<List<Integer>> getXrefOcc() {
         return xrefOcc;
     }
@@ -266,5 +307,61 @@ public class BagOfWordsIndex {
 
     public List<List<Integer>> getKeywordsOcc() {
         return keywordsOcc;
+    }
+
+    public List<List<Integer>> getFromOcc() {
+        return fromOcc;
+    }
+
+    public List<List<Integer>> getSubjectOcc() {
+        return subjectOcc;
+    }
+
+    public List<List<Integer>> getMessageidOcc() {
+        return messageidOcc;
+    }
+
+    public List<List<Integer>> getDateOcc() {
+        return dateOcc;
+    }
+
+    public List<List<Integer>> getOrganizationOcc() {
+        return organizationOcc;
+    }
+
+    public List<List<Integer>> getReplytoOcc() {
+        return replytoOcc;
+    }
+
+    public List<List<Integer>> getDistributionOcc() {
+        return distributionOcc;
+    }
+
+    public List<List<Integer>> getFollowuptoOcc() {
+        return followuptoOcc;
+    }
+
+    public List<List<Integer>> getSenderOcc() {
+        return senderOcc;
+    }
+
+    public List<List<Integer>> getNntppostinghostOcc() {
+        return nntppostinghostOcc;
+    }
+
+    public List<List<Integer>> getArticleidOcc() {
+        return articleidOcc;
+    }
+
+    public List<List<Integer>> getReturnreceipttoOcc() {
+        return returnreceipttoOcc;
+    }
+
+    public List<List<Integer>> getNfidOcc() {
+        return nfidOcc;
+    }
+
+    public List<List<Integer>> getNffromOcc() {
+        return nffromOcc;
     }
 }

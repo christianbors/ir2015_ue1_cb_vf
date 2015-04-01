@@ -24,10 +24,10 @@ public class BiGramIndex {
             bigramTokenizer.setReader(r);
             bigramTokenizer.reset();
             System.out.println(bigramTokenizer.toString());
-//            while (bigramTokenizer.incrementToken()) {
-//                System.out.println(charTermAttribute.toString());
-//            }
-//            bigramTokenizer.clearAttributes();
+            while (bigramTokenizer.incrementToken()) {
+                System.out.println(charTermAttribute.toString());
+            }
+            bigramTokenizer.clearAttributes();
         } catch (IOException e) {
             e.printStackTrace();
         }
