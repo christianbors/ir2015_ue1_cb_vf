@@ -1,8 +1,11 @@
 package ir2015.ue1.index;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
 import ir2015.ue1.model.Newsgroup;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -11,56 +14,167 @@ import java.util.*;
  * Created by christianbors on 26/03/15.
  */
 public class BagOfWordsIndex {
+    /*
+    private String from;
+    private String subject;
+    private String messageid;
+    private String date;
+    private String organization;
+    private String lines;
+    private String replyto;
+    private String distribution;
+    private String followupto;
+    private String sender;
+    private String nntppostinghost;
+    private String articleid;
+    private String returnreceiptto;
+    private String nfid;
+    private String nffrom;
+     */
     private List<Newsgroup> documentList;
-    private Map<String, Integer> textDictionary;
-    private Map<String, Integer> xrefDict;
-    private Map<String, Integer> referencesDict;
-    private Map<String, Integer> pathDict;
-    private Map<String, Integer> newsgroupDict;
-    private Map<String, Integer> keywordsDict;
-    private List<List<Integer>> textOccurrences;
-    private List<List<Integer>> xrefOcc;
-    private List<List<Integer>> referencesOcc;
-    private List<List<Integer>> pathOcc;
-    private List<List<Integer>> newsgroupOcc;
-    private List<List<Integer>> keywordsOcc;
+    private Map<String, Integer> textDictionary = new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> xrefDict = new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> referencesDict = new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> pathDict = new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> newsgroupDict = new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> keywordsDict = new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> fromDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> subjectDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> messageidDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> dateDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> organizationDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> linesDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> replytoDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> distributionDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> followuptoDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> senderDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> nntppostinghostDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> articleidDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> returnreceipttoDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> nfidDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> nffromDict= new LinkedHashMap<String, Integer>();
+
+    private List<List<Integer>> textOccurrences = new LinkedList<List<Integer>>();
+    private List<List<Integer>> xrefOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> referencesOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> pathOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> newsgroupOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> keywordsOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> fromOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> subjectOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> messageidOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> dateOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> organizationOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> linesOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> replytoOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> distributionOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> followuptoOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> senderOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> nntppostinghostOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> articleidOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> returnreceipttoOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> nfidOcc = new LinkedList<List<Integer>>();
+    private List<List<Integer>> nffromOcc = new LinkedList<List<Integer>>();
 
     public BagOfWordsIndex(List<Newsgroup> documents) {
         this.documentList = documents;
-        //text
-        this.textDictionary = new LinkedHashMap<String, Integer>();
-        this.textOccurrences = new LinkedList<List<Integer>>();
-        //xref
-        this.xrefDict = new LinkedHashMap<String, Integer>();
-        this.xrefOcc = new LinkedList<List<Integer>>();
+
         for (int docCount = 0; docCount < this.documentList.size(); ++docCount) {
-            // text index
             String[] textTokens = this.documentList.get(docCount).getText().split("\\s");
-            this.textDictionary = fillDictionary(this.textDictionary, textTokens);
-            //xref index
             String[] xrefTokens = this.documentList.get(docCount).getXref().toArray(new String[0]);
-            this.xrefDict = fillDictionary(this.xrefDict, xrefTokens);
+            String[] refTokens = this.documentList.get(docCount).getReferences().toArray(new String[0]);
+            String[] pathTokens = this.documentList.get(docCount).getPath().toArray(new String[0]);
+            String[] newsgroupTokens = this.documentList.get(docCount).getNewsgroups().toArray(new String[0]);
+            String[] keywordsTokens = this.documentList.get(docCount).getKeywords().toArray(new String[0]);
+            String[] fromToken = {this.documentList.get(docCount).getFrom()};
+            String[] subjectToken = {this.documentList.get(docCount).getSubject()};
+            String[] messageidToken = {this.documentList.get(docCount).getMessageid()};
+            String[] dateToken = {this.documentList.get(docCount).getDate()};
+            String[] organizationToken = {this.documentList.get(docCount).getOrganization()};
+            String[] replytoToken = {this.documentList.get(docCount).getReplyto()};
+            String[] distributionToken = {this.documentList.get(docCount).getDistribution()};
+            String[] followuptoToken = {this.documentList.get(docCount).getFollowupto()};
+            String[] senderToken = {this.documentList.get(docCount).getSender()};
+            String[] nntppostinghostToken = {this.documentList.get(docCount).getNntppostinghost()};
+            String[] articleidToken = {this.documentList.get(docCount).getArticleid()};
+            String[] returnreceipttoToken = {this.documentList.get(docCount).getReturnreceiptto()};
+            String[] nfidToken = {this.documentList.get(docCount).getNfid()};
+            String[] nffromToken = {this.documentList.get(docCount).getNffrom()};
+
+            fillDictionary(this.textDictionary, textTokens);
+            fillDictionary(this.xrefDict, xrefTokens);
+            fillDictionary(this.referencesDict, refTokens);
+            fillDictionary(this.pathDict, pathTokens);
+            fillDictionary(this.newsgroupDict, newsgroupTokens);
+            fillDictionary(this.keywordsDict, keywordsTokens);
+            fillDictionary(this.fromDict, fromToken);
+            fillDictionary(this.subjectDict, subjectToken);
+            fillDictionary(this.messageidDict, messageidToken);
+            fillDictionary(this.dateDict, dateToken);
+            fillDictionary(this.organizationDict, organizationToken);
+            fillDictionary(this.replytoDict, replytoToken);
+            fillDictionary(this.distributionDict, distributionToken);
+            fillDictionary(this.followuptoDict, followuptoToken);
+            fillDictionary(this.senderDict, senderToken);
+            fillDictionary(this.nntppostinghostDict, nntppostinghostToken);
+            fillDictionary(this.articleidDict, articleidToken);
+            fillDictionary(this.returnreceipttoDict, returnreceipttoToken);
+            fillDictionary(this.nfidDict, nfidToken);
+            fillDictionary(this.nffromDict, nffromToken);
         }
         for (int docCount = 0; docCount < this.documentList.size(); ++docCount) {
-            // text index
             String[] textTokens = this.documentList.get(docCount).getText().split("\\s");
-            fillOccurrences(this.textDictionary, this.textOccurrences, textTokens);
-            //xref index
             String[] xrefTokens = this.documentList.get(docCount).getXref().toArray(new String[0]);
-            fillOccurrences(this.xrefDict, xrefOcc, xrefTokens);
+            String[] refTokens = this.documentList.get(docCount).getReferences().toArray(new String[0]);
+            String[] pathTokens = this.documentList.get(docCount).getPath().toArray(new String[0]);
+            String[] newsgroupTokens = this.documentList.get(docCount).getNewsgroups().toArray(new String[0]);
+            String[] keywordsTokens = this.documentList.get(docCount).getKeywords().toArray(new String[0]);
+            String[] fromToken = {this.documentList.get(docCount).getFrom()};
+            String[] subjectToken = {this.documentList.get(docCount).getSubject()};
+            String[] messageidToken = {this.documentList.get(docCount).getMessageid()};
+            String[] dateToken = {this.documentList.get(docCount).getDate()};
+            String[] organizationToken = {this.documentList.get(docCount).getOrganization()};
+            String[] replytoToken = {this.documentList.get(docCount).getReplyto()};
+            String[] distributionToken = {this.documentList.get(docCount).getDistribution()};
+            String[] followuptoToken = {this.documentList.get(docCount).getFollowupto()};
+            String[] senderToken = {this.documentList.get(docCount).getSender()};
+            String[] nntppostinghostToken = {this.documentList.get(docCount).getNntppostinghost()};
+            String[] articleidToken = {this.documentList.get(docCount).getArticleid()};
+            String[] returnreceipttoToken = {this.documentList.get(docCount).getReturnreceiptto()};
+            String[] nfidToken = {this.documentList.get(docCount).getNfid()};
+            String[] nffromToken = {this.documentList.get(docCount).getNffrom()};
+
+            fillOccurrences(this.textDictionary, this.textOccurrences, textTokens);
+            fillOccurrences(this.xrefDict, this.xrefOcc, xrefTokens);
+            fillOccurrences(this.referencesDict, this.referencesOcc, refTokens);
+            fillOccurrences(this.pathDict, this.pathOcc, pathTokens);
+            fillOccurrences(this.newsgroupDict, this.newsgroupOcc, newsgroupTokens);
+            fillOccurrences(this.keywordsDict, this.keywordsOcc, keywordsTokens);
+            fillOccurrences(this.fromDict, this.fromOcc, fromToken);
+            fillOccurrences(this.subjectDict, this.subjectOcc, subjectToken);
+            fillOccurrences(this.messageidDict, this.messageidOcc, messageidToken);
+            fillOccurrences(this.dateDict, this.dateOcc, dateToken);
+            fillOccurrences(this.organizationDict, this.organizationOcc, organizationToken);
+            fillOccurrences(this.replytoDict, this.replytoOcc, replytoToken);
+            fillOccurrences(this.distributionDict, this.distributionOcc, distributionToken);
+            fillOccurrences(this.followuptoDict, this.followuptoOcc, followuptoToken);
+            fillOccurrences(this.senderDict, this.senderOcc, senderToken);
+            fillOccurrences(this.nntppostinghostDict, this.nntppostinghostOcc, nntppostinghostToken);
+            fillOccurrences(this.articleidDict, this.articleidOcc, articleidToken);
+            fillOccurrences(this.returnreceipttoDict, this.returnreceipttoOcc, returnreceipttoToken);
+            fillOccurrences(this.nfidDict, this.nfidOcc, nfidToken);
+            fillOccurrences(this.nffromDict, this.nffromOcc, nffromToken);
         }
 //        fillIndex();
         fillXrefIndex();
     }
 
-    private Map<String, Integer> fillDictionary(Map<String, Integer> dictionary, String[] tokens) {
+    private void fillDictionary(Map<String, Integer> dictionary, String[] tokens) {
         for (int i = 0; i < tokens.length; ++i) {
             if (!dictionary.containsKey(tokens[i])) {
                 dictionary.put(tokens[i], dictionary.size());
             }
         }
-        System.out.println(dictionary.size());
-        return dictionary;
     }
 
     private void fillOccurrences(Map<String, Integer> dictionary, List<List<Integer>> occurrences, String[] tokens) {
@@ -82,18 +196,28 @@ public class BagOfWordsIndex {
     public void writeToJSON(String filename) {
         FileWriter jsonFileWriter = null;
         try {
-            jsonFileWriter = new FileWriter(filename + "_dictionary.json");
-            jsonFileWriter.write(new Gson().toJson(this.getTextDictionary()));
-            jsonFileWriter.flush();
-            jsonFileWriter.close();
-
-            jsonFileWriter = new FileWriter(filename + "_occurrences.json");
-            jsonFileWriter.write(new Gson().toJson(this.getTextOccurrences()));
+            jsonFileWriter = new FileWriter(filename + ".json");
+            jsonFileWriter.write(new Gson().toJson(this));
             jsonFileWriter.flush();
             jsonFileWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public BagOfWordsIndex readFromJSONFile(String filename) {
+        BagOfWordsIndex indexFile = null;
+        FileReader jsonFileReader;
+        try {
+            jsonFileReader = new FileReader(filename + ".json");
+            indexFile = new Gson().fromJson(jsonFileReader, BagOfWordsIndex.class);
+            jsonFileReader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return indexFile;
     }
 
     public Map<String, Integer> getTextDictionary() {

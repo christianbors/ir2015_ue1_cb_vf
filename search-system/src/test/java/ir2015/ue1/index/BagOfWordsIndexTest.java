@@ -1,5 +1,6 @@
 package ir2015.ue1.index;
 
+import com.google.gson.Gson;
 import ir2015.ue1.model.Newsgroup;
 import ir2015.ue1.parser.NewsgroupTopicParser;
 import junit.framework.Test;
@@ -69,6 +70,11 @@ public class BagOfWordsIndexTest extends TestCase {
     public void testWriteToJSON() throws Exception {
         BagOfWordsIndex idx = new BagOfWordsIndex(docs);
         idx.writeToJSON("test");
+    }
+
+    public void testReadFromJSON() throws Exception {
+        BagOfWordsIndex idx = new BagOfWordsIndex(docs);
+        assertEquals(idx.readFromJSONFile("test"), idx);
     }
 
     public static Test suite() {
