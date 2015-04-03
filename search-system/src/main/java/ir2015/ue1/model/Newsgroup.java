@@ -30,6 +30,7 @@ public class Newsgroup {
     private String nffrom;
     private ArrayList<String> keywords; // can be multiple
     private String text;
+    private ArrayList<String> tokens;
     //...
 
     public Newsgroup() {
@@ -54,7 +55,12 @@ public class Newsgroup {
         nffrom = "";
         keywords = new ArrayList<String>();
         text = "";
+        tokens = new ArrayList<String>();
     }
+
+    public ArrayList<String> getTokens() { return tokens; }
+
+    public void setTokens(String token) { this.tokens.add(token); }
 
     public ArrayList<String> getKeywords() { return keywords; }
 

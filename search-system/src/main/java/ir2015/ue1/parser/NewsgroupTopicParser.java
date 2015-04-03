@@ -3,6 +3,8 @@ package ir2015.ue1.parser;
 import ir2015.ue1.model.Newsgroup;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 
 /**
@@ -10,10 +12,12 @@ import java.io.*;
  */
 public class NewsgroupTopicParser {
 
+    private static Stopwords stopwords;
+
     // constructor
     public NewsgroupTopicParser()
     {
-
+        stopwords = Stopwords.getInstance();
     }
 
     public Newsgroup parse(String file_name)
@@ -150,11 +154,54 @@ public class NewsgroupTopicParser {
                 }
             }
         }
+        catch (FileNotFoundException e)
+        {
+            System.out.println("File not found");
+            e.printStackTrace();
+        }
         catch (IOException e) {
            e.printStackTrace();
         }
 
         ng.setText(text_content.toString());
         return ng;
+    }
+
+    // Filter out the special characters
+    // Convert tokens to lower case
+    // Filter out stop words
+    public void tokenizeText(Newsgroup ng)
+    {
+        String text = ng.getText();
+        // replace all non alpha numerical characters
+        // and convert result to lower case
+        text = text.replaceAll("[^\\w\\s]", "");
+        text = text.toLowerCase();
+
+        ArrayList<String> tokens = new ArrayList<String>();
+
+        // add the tokens to the newsgroup arraylist tokens
+        StringTokenizer tokenizer = new StringTokenizer(text);
+        while(tokenizer.hasMoreTokens())
+        {
+            tokens.add(tokenizer.nextToken());
+        }
+
+        // filter stop words
+        for (int i = 0; i < tokens.size(); i++) {
+            // get the item as string
+            for (int j = 0; j < stopwords.getStopwords().length; j++) {
+                if (stopwords.getStopwords()[j].contains(tokens.get(i))) {
+                    tokens.remove(i);
+                }
+            }
+        }
+        // finally add the filtered result to the newsgroup
+        for(int i = 0; i < tokens.size(); i++)
+        {
+            ng.setTokens(tokens.get(i));
+            //System.out.println(tokens.get(i));
+        }
+
     }
 }
