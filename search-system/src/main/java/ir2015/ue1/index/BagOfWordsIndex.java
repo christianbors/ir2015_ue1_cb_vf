@@ -177,7 +177,7 @@ public class BagOfWordsIndex {
     public void writeToJSON(String filename) {
         FileWriter jsonFileWriter = null;
         try {
-            jsonFileWriter = new FileWriter(filename + ".json");
+            jsonFileWriter = new FileWriter(filename + "_bow.json");
             jsonFileWriter.write(new Gson().toJson(this));
             jsonFileWriter.flush();
             jsonFileWriter.close();
@@ -190,7 +190,7 @@ public class BagOfWordsIndex {
         BagOfWordsIndex indexFile = null;
         FileReader jsonFileReader;
         try {
-            jsonFileReader = new FileReader(filename + ".json");
+            jsonFileReader = new FileReader(filename + "_bow.json");
             indexFile = new Gson().fromJson(jsonFileReader, BagOfWordsIndex.class);
             jsonFileReader.close();
         } catch (FileNotFoundException e) {

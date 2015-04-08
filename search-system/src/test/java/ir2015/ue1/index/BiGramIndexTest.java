@@ -7,8 +7,7 @@ import junit.framework.TestSuite;
 import junit.framework.TestCase;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * BiGramIndex Tester.
@@ -18,7 +17,7 @@ import java.util.List;
  * @since <pre>03/28/2015</pre>
  */
 public class BiGramIndexTest extends TestCase {
-    List<Newsgroup> docs;
+    private List<Newsgroup> docs;
 
     public BiGramIndexTest(String name) {
         super(name);
