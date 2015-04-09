@@ -152,12 +152,11 @@ public class BiGramIndex {
             fillPostings(this.nfidDict, this.nfidPostings, nfidWord);
             fillPostings(this.nffromDict, this.nffromPostings, nffromWord);
         }
-        System.out.println(textDict.size());
     }
 
     private void fillIndex(Map<String, Set<String>> index, String[] words) {
         for (String word : words) {
-            for (String bigram : getWords(word)) {
+            for (String bigram : tokenize(word)) {
                 if (index.containsKey(bigram)) {
                     index.get(bigram).add(word);
                 } else {
@@ -174,30 +173,31 @@ public class BiGramIndex {
             postings.put(key, new LinkedList<Posting>());
         }
         for (int count = 0; count < words.length; ++count) {
-            for (String bigram : getWords(words[count])) {
+            for (String bigram : tokenize(words[count])) {
                 postings.get(bigram).add(new Posting(docCount, count));
             }
         }
     }
 
-    private Set<String> getWords(String word) {
-        Set<String> Wordset = new HashSet<String>();
+    private Set<String> tokenize(String word) {
+        Set<String> wordset = new HashSet<String>();
         if (!word.isEmpty()) {
-            StringReader r = new StringReader("$" + word + "$");
-            bigramTokenizer = new NGramTokenizer(2, 2);
-            try {
-                this.charTermAttribute = bigramTokenizer.addAttribute(CharTermAttribute.class);
-                bigramTokenizer.setReader(r);
-                bigramTokenizer.reset();
-                while (bigramTokenizer.incrementToken()) {
-                    Wordset.add(charTermAttribute.toString());
+            for (int i = 0; i < word.length(); ++i) {
+                if (i == 0) {
+                    wordset.add("$" + word.charAt(0));
+                    if (word.length() > 1) {
+                        wordset.add(word.substring(i, i + 2));
+                    }
+                } else if (i == word.length()-1) {
+                    wordset.add(word.charAt(i) + "$");
+                } else {
+                    if (word.length() > 1) {
+                        wordset.add(word.substring(i, i + 2));
+                    }
                 }
-                bigramTokenizer.clearAttributes();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
-        return Wordset;
+        return wordset;
     }
 
     public void writeToJSON(String filename) {
