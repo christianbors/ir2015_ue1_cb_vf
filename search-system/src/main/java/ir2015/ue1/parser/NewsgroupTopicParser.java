@@ -210,8 +210,8 @@ public class NewsgroupTopicParser {
                 String s = stemmer.getCurrent();
                 if(!isNumber(s))
                 {
-                    ng.setTokens(stemmer.getCurrent());
-                    System.out.println(stemmer.getCurrent());
+                    ng.setTokens(s);
+                    System.out.println(s);
                 }
                 else
                 {
