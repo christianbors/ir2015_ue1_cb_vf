@@ -1,10 +1,13 @@
 package ir2015.ue1.parser;
 
+import com.sun.deploy.util.StringUtils;
 import ir2015.ue1.model.Newsgroup;
+import org.tartarus.snowball.ext.PorterStemmer;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+
 
 
 /**
@@ -13,10 +16,12 @@ import java.util.StringTokenizer;
 public class NewsgroupTopicParser {
 
     private static Stopwords stopwords;
+    private PorterStemmer stemmer;
 
     // constructor
     public NewsgroupTopicParser()
     {
+        stemmer = new PorterStemmer();
         stopwords = Stopwords.getInstance();
     }
 
@@ -199,9 +204,37 @@ public class NewsgroupTopicParser {
         // finally add the filtered result to the newsgroup
         for(int i = 0; i < tokens.size(); i++)
         {
-            ng.setTokens(tokens.get(i));
+            stemmer.setCurrent(tokens.get(i));
+            if(stemmer.stem())
+            {
+                String s = stemmer.getCurrent();
+                if(!isNumber(s))
+                {
+                    ng.setTokens(stemmer.getCurrent());
+                    System.out.println(stemmer.getCurrent());
+                }
+                else
+                {
+                    // ?
+                }
+
+            }
+
             //System.out.println(tokens.get(i));
         }
 
+    }
+
+    private static boolean isNumber(String s)
+    {
+        try
+        {
+            Integer.parseInt(s);
+        }
+        catch(Exception e)
+        {
+            return false;
+        }
+        return true;
     }
 }
