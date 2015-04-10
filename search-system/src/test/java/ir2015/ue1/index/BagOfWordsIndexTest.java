@@ -9,7 +9,9 @@ import junit.framework.TestCase;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * BagOfWordsIndex Tester.
@@ -20,7 +22,7 @@ import java.util.List;
  */
 public class BagOfWordsIndexTest extends TestCase {
 
-    List<Newsgroup> docs;
+    Map<String, Newsgroup> docs;
 
     public BagOfWordsIndexTest(String name) {
         super(name);
@@ -28,21 +30,21 @@ public class BagOfWordsIndexTest extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        docs = new ArrayList<Newsgroup>();
+        docs = new HashMap<String, Newsgroup>();
         String path = "../20_newsgroups_subset/alt.atheism";
         File folder = new File(path);
         System.out.println(folder.listFiles().length);
-        for (File f : folder.listFiles()) {
-            if(f.isFile()) {
-                docs.add(new NewsgroupTopicParser().parse(path + "/" + f.getName()));
-            }
-        }
-//        for (int i = 0; i < 10; ++i) {
-//            File f = folder.listFiles()[i];
+//        for (File f : folder.listFiles()) {
 //            if(f.isFile()) {
 //                docs.add(new NewsgroupTopicParser().parse(path + "/" + f.getName()));
 //            }
 //        }
+        for (int i = 0; i < 10; ++i) {
+            File f = folder.listFiles()[i];
+            if(f.isFile()) {
+                docs.put(f.getName(), new NewsgroupTopicParser().parse(path + "/" + f.getName()));
+            }
+        }
     }
 
     public void tearDown() throws Exception {

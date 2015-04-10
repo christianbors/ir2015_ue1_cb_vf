@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class BagOfWordsIndex {
 
-    private List<Newsgroup> documentList;
+    private Map<String, Newsgroup> documentList;
     private Map<String, Integer> textDictionary = new LinkedHashMap<String, Integer>();
     private Map<String, Integer> xrefDict = new LinkedHashMap<String, Integer>();
     private Map<String, Integer> referencesDict = new LinkedHashMap<String, Integer>();
@@ -36,51 +36,51 @@ public class BagOfWordsIndex {
     private Map<String, Integer> nfidDict= new LinkedHashMap<String, Integer>();
     private Map<String, Integer> nffromDict= new LinkedHashMap<String, Integer>();
 
-    private List<List<Integer>> textOccurrences = new LinkedList<List<Integer>>();
-    private List<List<Integer>> xrefOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> referencesOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> pathOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> newsgroupOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> keywordsOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> fromOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> subjectOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> messageidOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> dateOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> organizationOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> replytoOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> distributionOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> followuptoOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> senderOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> nntppostinghostOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> articleidOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> returnreceipttoOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> nfidOcc = new LinkedList<List<Integer>>();
-    private List<List<Integer>> nffromOcc = new LinkedList<List<Integer>>();
+    private Map<String, List<Integer>> textOccurrences = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> xrefOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> referencesOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> pathOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> newsgroupOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> keywordsOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> fromOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> subjectOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> messageidOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> dateOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> organizationOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> replytoOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> distributionOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> followuptoOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> senderOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> nntppostinghostOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> articleidOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> returnreceipttoOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> nfidOcc = new LinkedHashMap<String, List<Integer>>();
+    private Map<String, List<Integer>> nffromOcc = new LinkedHashMap<String, List<Integer>>();
 
-    public BagOfWordsIndex(List<Newsgroup> documents) {
+    public BagOfWordsIndex(Map<String, Newsgroup> documents) {
         this.documentList = documents;
 
-        for (int docCount = 0; docCount < this.documentList.size(); ++docCount) {
-            String[] textTokens = this.documentList.get(docCount).getText().split("\\s");
-            String[] xrefTokens = this.documentList.get(docCount).getXref().toArray(new String[0]);
-            String[] refTokens = this.documentList.get(docCount).getReferences().toArray(new String[0]);
-            String[] pathTokens = this.documentList.get(docCount).getPath().toArray(new String[0]);
-            String[] newsgroupTokens = this.documentList.get(docCount).getNewsgroups().toArray(new String[0]);
-            String[] keywordsTokens = this.documentList.get(docCount).getKeywords().toArray(new String[0]);
-            String[] fromToken = {this.documentList.get(docCount).getFrom()};
-            String[] subjectToken = {this.documentList.get(docCount).getSubject()};
-            String[] messageidToken = {this.documentList.get(docCount).getMessageid()};
-            String[] dateToken = {this.documentList.get(docCount).getDate()};
-            String[] organizationToken = {this.documentList.get(docCount).getOrganization()};
-            String[] replytoToken = {this.documentList.get(docCount).getReplyto()};
-            String[] distributionToken = {this.documentList.get(docCount).getDistribution()};
-            String[] followuptoToken = {this.documentList.get(docCount).getFollowupto()};
-            String[] senderToken = {this.documentList.get(docCount).getSender()};
-            String[] nntppostinghostToken = {this.documentList.get(docCount).getNntppostinghost()};
-            String[] articleidToken = {this.documentList.get(docCount).getArticleid()};
-            String[] returnreceipttoToken = {this.documentList.get(docCount).getReturnreceiptto()};
-            String[] nfidToken = {this.documentList.get(docCount).getNfid()};
-            String[] nffromToken = {this.documentList.get(docCount).getNffrom()};
+        for (Map.Entry<String, Newsgroup> entry : documentList.entrySet()) {
+            String[] textTokens = entry.getValue().getTokens().toArray(new String[this.documentList.size()]);
+            String[] xrefTokens = entry.getValue().getXref().toArray(new String[0]);
+            String[] refTokens = entry.getValue().getReferences().toArray(new String[0]);
+            String[] pathTokens = entry.getValue().getPath().toArray(new String[0]);
+            String[] newsgroupTokens = entry.getValue().getNewsgroups().toArray(new String[0]);
+            String[] keywordsTokens = entry.getValue().getKeywords().toArray(new String[0]);
+            String[] fromToken = {entry.getValue().getFrom()};
+            String[] subjectToken = {entry.getValue().getSubject()};
+            String[] messageidToken = {entry.getValue().getMessageid()};
+            String[] dateToken = {entry.getValue().getDate()};
+            String[] organizationToken = {entry.getValue().getOrganization()};
+            String[] replytoToken = {entry.getValue().getReplyto()};
+            String[] distributionToken = {entry.getValue().getDistribution()};
+            String[] followuptoToken = {entry.getValue().getFollowupto()};
+            String[] senderToken = {entry.getValue().getSender()};
+            String[] nntppostinghostToken = {entry.getValue().getNntppostinghost()};
+            String[] articleidToken = {entry.getValue().getArticleid()};
+            String[] returnreceipttoToken = {entry.getValue().getReturnreceiptto()};
+            String[] nfidToken = {entry.getValue().getNfid()};
+            String[] nffromToken = {entry.getValue().getNffrom()};
 
             fillDictionary(this.textDictionary, textTokens);
             fillDictionary(this.xrefDict, xrefTokens);
@@ -103,48 +103,48 @@ public class BagOfWordsIndex {
             fillDictionary(this.nfidDict, nfidToken);
             fillDictionary(this.nffromDict, nffromToken);
         }
-        for (int docCount = 0; docCount < this.documentList.size(); ++docCount) {
-            String[] textTokens = this.documentList.get(docCount).getText().split("\\s");
-            String[] xrefTokens = this.documentList.get(docCount).getXref().toArray(new String[0]);
-            String[] refTokens = this.documentList.get(docCount).getReferences().toArray(new String[0]);
-            String[] pathTokens = this.documentList.get(docCount).getPath().toArray(new String[0]);
-            String[] newsgroupTokens = this.documentList.get(docCount).getNewsgroups().toArray(new String[0]);
-            String[] keywordsTokens = this.documentList.get(docCount).getKeywords().toArray(new String[0]);
-            String[] fromToken = {this.documentList.get(docCount).getFrom()};
-            String[] subjectToken = {this.documentList.get(docCount).getSubject()};
-            String[] messageidToken = {this.documentList.get(docCount).getMessageid()};
-            String[] dateToken = {this.documentList.get(docCount).getDate()};
-            String[] organizationToken = {this.documentList.get(docCount).getOrganization()};
-            String[] replytoToken = {this.documentList.get(docCount).getReplyto()};
-            String[] distributionToken = {this.documentList.get(docCount).getDistribution()};
-            String[] followuptoToken = {this.documentList.get(docCount).getFollowupto()};
-            String[] senderToken = {this.documentList.get(docCount).getSender()};
-            String[] nntppostinghostToken = {this.documentList.get(docCount).getNntppostinghost()};
-            String[] articleidToken = {this.documentList.get(docCount).getArticleid()};
-            String[] returnreceipttoToken = {this.documentList.get(docCount).getReturnreceiptto()};
-            String[] nfidToken = {this.documentList.get(docCount).getNfid()};
-            String[] nffromToken = {this.documentList.get(docCount).getNffrom()};
+        for (Map.Entry<String, Newsgroup> entry : documentList.entrySet()) {
+            String[] textTokens = entry.getValue().getTokens().toArray(new String[this.documentList.size()]);
+            String[] xrefTokens = entry.getValue().getXref().toArray(new String[0]);
+            String[] refTokens = entry.getValue().getReferences().toArray(new String[0]);
+            String[] pathTokens = entry.getValue().getPath().toArray(new String[0]);
+            String[] newsgroupTokens = entry.getValue().getNewsgroups().toArray(new String[0]);
+            String[] keywordsTokens = entry.getValue().getKeywords().toArray(new String[0]);
+            String[] fromToken = {entry.getValue().getFrom()};
+            String[] subjectToken = {entry.getValue().getSubject()};
+            String[] messageidToken = {entry.getValue().getMessageid()};
+            String[] dateToken = {entry.getValue().getDate()};
+            String[] organizationToken = {entry.getValue().getOrganization()};
+            String[] replytoToken = {entry.getValue().getReplyto()};
+            String[] distributionToken = {entry.getValue().getDistribution()};
+            String[] followuptoToken = {entry.getValue().getFollowupto()};
+            String[] senderToken = {entry.getValue().getSender()};
+            String[] nntppostinghostToken = {entry.getValue().getNntppostinghost()};
+            String[] articleidToken = {entry.getValue().getArticleid()};
+            String[] returnreceipttoToken = {entry.getValue().getReturnreceiptto()};
+            String[] nfidToken = {entry.getValue().getNfid()};
+            String[] nffromToken = {entry.getValue().getNffrom()};
 
-            fillOccurrences(this.textDictionary, this.textOccurrences, textTokens);
-            fillOccurrences(this.xrefDict, this.xrefOcc, xrefTokens);
-            fillOccurrences(this.referencesDict, this.referencesOcc, refTokens);
-            fillOccurrences(this.pathDict, this.pathOcc, pathTokens);
-            fillOccurrences(this.newsgroupDict, this.newsgroupOcc, newsgroupTokens);
-            fillOccurrences(this.keywordsDict, this.keywordsOcc, keywordsTokens);
-            fillOccurrences(this.fromDict, this.fromOcc, fromToken);
-            fillOccurrences(this.subjectDict, this.subjectOcc, subjectToken);
-            fillOccurrences(this.messageidDict, this.messageidOcc, messageidToken);
-            fillOccurrences(this.dateDict, this.dateOcc, dateToken);
-            fillOccurrences(this.organizationDict, this.organizationOcc, organizationToken);
-            fillOccurrences(this.replytoDict, this.replytoOcc, replytoToken);
-            fillOccurrences(this.distributionDict, this.distributionOcc, distributionToken);
-            fillOccurrences(this.followuptoDict, this.followuptoOcc, followuptoToken);
-            fillOccurrences(this.senderDict, this.senderOcc, senderToken);
-            fillOccurrences(this.nntppostinghostDict, this.nntppostinghostOcc, nntppostinghostToken);
-            fillOccurrences(this.articleidDict, this.articleidOcc, articleidToken);
-            fillOccurrences(this.returnreceipttoDict, this.returnreceipttoOcc, returnreceipttoToken);
-            fillOccurrences(this.nfidDict, this.nfidOcc, nfidToken);
-            fillOccurrences(this.nffromDict, this.nffromOcc, nffromToken);
+            fillOccurrences(this.textDictionary, this.textOccurrences, entry.getKey(), textTokens);
+            fillOccurrences(this.xrefDict, this.xrefOcc, entry.getKey(), xrefTokens);
+            fillOccurrences(this.referencesDict, this.referencesOcc, entry.getKey(), refTokens);
+            fillOccurrences(this.pathDict, this.pathOcc, entry.getKey(), pathTokens);
+            fillOccurrences(this.newsgroupDict, this.newsgroupOcc, entry.getKey(), newsgroupTokens);
+            fillOccurrences(this.keywordsDict, this.keywordsOcc, entry.getKey(), keywordsTokens);
+            fillOccurrences(this.fromDict, this.fromOcc, entry.getKey(), fromToken);
+            fillOccurrences(this.subjectDict, this.subjectOcc, entry.getKey(), subjectToken);
+            fillOccurrences(this.messageidDict, this.messageidOcc, entry.getKey(), messageidToken);
+            fillOccurrences(this.dateDict, this.dateOcc, entry.getKey(), dateToken);
+            fillOccurrences(this.organizationDict, this.organizationOcc, entry.getKey(), organizationToken);
+            fillOccurrences(this.replytoDict, this.replytoOcc, entry.getKey(), replytoToken);
+            fillOccurrences(this.distributionDict, this.distributionOcc, entry.getKey(), distributionToken);
+            fillOccurrences(this.followuptoDict, this.followuptoOcc, entry.getKey(), followuptoToken);
+            fillOccurrences(this.senderDict, this.senderOcc, entry.getKey(), senderToken);
+            fillOccurrences(this.nntppostinghostDict, this.nntppostinghostOcc, entry.getKey(), nntppostinghostToken);
+            fillOccurrences(this.articleidDict, this.articleidOcc, entry.getKey(), articleidToken);
+            fillOccurrences(this.returnreceipttoDict, this.returnreceipttoOcc, entry.getKey(), returnreceipttoToken);
+            fillOccurrences(this.nfidDict, this.nfidOcc, entry.getKey(), nfidToken);
+            fillOccurrences(this.nffromDict, this.nffromOcc, entry.getKey(), nffromToken);
         }
 //        fillIndex();
         fillXrefIndex();
@@ -158,10 +158,8 @@ public class BagOfWordsIndex {
         }
     }
 
-    private void fillOccurrences(Map<String, Integer> dictionary, List<List<Integer>> occurrences, String[] tokens) {
-        occurrences.add(
-                new ArrayList(
-                        Collections.nCopies(dictionary.size(), 0)));
+    private void fillOccurrences(Map<String, Integer> dictionary, Map<String, List<Integer>> occurrences, String documentName, String[] tokens) {
+        occurrences.put(documentName, new ArrayList(Collections.nCopies(dictionary.size(), 0)));
         int occurrenceIdx = occurrences.size()-1;
         for (int i = 0; i < tokens.length; ++i) {
             List<Integer> currentOccurrence = occurrences.get(occurrenceIdx);
@@ -201,7 +199,7 @@ public class BagOfWordsIndex {
         return indexFile;
     }
 
-    public List<Newsgroup> getDocumentList() {
+    public Map<String, Newsgroup> getDocumentList() {
         return documentList;
     }
 
@@ -285,83 +283,83 @@ public class BagOfWordsIndex {
         return nffromDict;
     }
 
-    public List<List<Integer>> getTextOccurrences() {
+    public Map<String, List<Integer>> getTextOccurrences() {
         return textOccurrences;
     }
 
-    public List<List<Integer>> getXrefOcc() {
+    public Map<String, List<Integer>> getXrefOcc() {
         return xrefOcc;
     }
 
-    public List<List<Integer>> getReferencesOcc() {
+    public Map<String, List<Integer>> getReferencesOcc() {
         return referencesOcc;
     }
 
-    public List<List<Integer>> getPathOcc() {
+    public Map<String, List<Integer>> getPathOcc() {
         return pathOcc;
     }
 
-    public List<List<Integer>> getNewsgroupOcc() {
+    public Map<String, List<Integer>> getNewsgroupOcc() {
         return newsgroupOcc;
     }
 
-    public List<List<Integer>> getKeywordsOcc() {
+    public Map<String, List<Integer>> getKeywordsOcc() {
         return keywordsOcc;
     }
 
-    public List<List<Integer>> getFromOcc() {
+    public Map<String, List<Integer>> getFromOcc() {
         return fromOcc;
     }
 
-    public List<List<Integer>> getSubjectOcc() {
+    public Map<String, List<Integer>> getSubjectOcc() {
         return subjectOcc;
     }
 
-    public List<List<Integer>> getMessageidOcc() {
+    public Map<String, List<Integer>> getMessageidOcc() {
         return messageidOcc;
     }
 
-    public List<List<Integer>> getDateOcc() {
+    public Map<String, List<Integer>> getDateOcc() {
         return dateOcc;
     }
 
-    public List<List<Integer>> getOrganizationOcc() {
+    public Map<String, List<Integer>> getOrganizationOcc() {
         return organizationOcc;
     }
 
-    public List<List<Integer>> getReplytoOcc() {
+    public Map<String, List<Integer>> getReplytoOcc() {
         return replytoOcc;
     }
 
-    public List<List<Integer>> getDistributionOcc() {
+    public Map<String, List<Integer>> getDistributionOcc() {
         return distributionOcc;
     }
 
-    public List<List<Integer>> getFollowuptoOcc() {
+    public Map<String, List<Integer>> getFollowuptoOcc() {
         return followuptoOcc;
     }
 
-    public List<List<Integer>> getSenderOcc() {
+    public Map<String, List<Integer>> getSenderOcc() {
         return senderOcc;
     }
 
-    public List<List<Integer>> getNntppostinghostOcc() {
+    public Map<String, List<Integer>> getNntppostinghostOcc() {
         return nntppostinghostOcc;
     }
 
-    public List<List<Integer>> getArticleidOcc() {
+    public Map<String, List<Integer>> getArticleidOcc() {
         return articleidOcc;
     }
 
-    public List<List<Integer>> getReturnreceipttoOcc() {
+    public Map<String, List<Integer>> getReturnreceipttoOcc() {
         return returnreceipttoOcc;
     }
 
-    public List<List<Integer>> getNfidOcc() {
+    public Map<String, List<Integer>> getNfidOcc() {
         return nfidOcc;
     }
 
-    public List<List<Integer>> getNffromOcc() {
+    public Map<String, List<Integer>> getNffromOcc() {
         return nffromOcc;
     }
 }
