@@ -53,12 +53,9 @@ public class BiGramIndex {
     private Map<String, List<Posting>> nfidPostings = new LinkedHashMap<String, List<Posting>>();
     private Map<String, List<Posting>> nffromPostings = new LinkedHashMap<String, List<Posting>>();
 
-    private int docCount = -1;
-
-    public BiGramIndex(List<Newsgroup> documents) {
-        for(int count = 0; count < documents.size(); ++count) {
-            Newsgroup ng = documents.get(count);
-            docCount = count;
+    public BiGramIndex(Map<String, Newsgroup> documents) {
+        for(Map.Entry<String, Newsgroup> entry : documents.entrySet()) {
+            Newsgroup ng = entry.getValue();
             //TODO: change split
             String[] textWords = ng.getText().split("\\s");
             String[] xrefWords = ng.getXref().toArray(new String[0]);
@@ -102,9 +99,8 @@ public class BiGramIndex {
             fillIndex(this.nfidDict, nfidWord);
             fillIndex(this.nffromDict, nffromWord);
         }
-        for (int count = 0; count < documents.size(); ++count) {
-            Newsgroup ng = documents.get(count);
-            docCount = count;
+        for(Map.Entry<String, Newsgroup> entry : documents.entrySet()) {
+            Newsgroup ng = entry.getValue();
             //TODO: change split
             String[] textWords = ng.getText().split("\\s");
             String[] xrefWords = ng.getXref().toArray(new String[0]);
@@ -127,26 +123,26 @@ public class BiGramIndex {
             String[] nfidWord = {ng.getNfid()};
             String[] nffromWord = {ng.getNffrom()};
 
-            fillPostings(this.textDict, this.textPostings, textWords);
-            fillPostings(this.xrefDict, this.xrefPostings, xrefWords);
-            fillPostings(this.referencesDict, this.referencesPostings, refWords);
-            fillPostings(this.pathDict, this.pathPostings, pathWords);
-            fillPostings(this.newsgroupDict, this.newsgroupPostings, newsgroupWords);
-            fillPostings(this.keywordsDict, this.keywordsPostings, keywordsWords);
-            fillPostings(this.fromDict, this.fromPostings, fromWord);
-            fillPostings(this.subjectDict, this.subjectPostings, subjectWord);
-            fillPostings(this.messageidDict, this.messageidPostings, messageidWord);
-            fillPostings(this.dateDict, this.datePostings, dateWord);
-            fillPostings(this.organizationDict, this.organizationPostings, organizationWord);
-            fillPostings(this.replytoDict, this.replytoPostings, replytoWord);
-            fillPostings(this.distributionDict, this.distributionPostings, distributionWord);
-            fillPostings(this.followuptoDict, this.followuptoPostings, followuptoWord);
-            fillPostings(this.senderDict, this.senderPostings, senderWord);
-            fillPostings(this.nntppostinghostDict, this.nntppostinghostPostings, nntppostinghostWord);
-            fillPostings(this.articleidDict, this.articleidPostings, articleidWord);
-            fillPostings(this.returnreceipttoDict, this.returnreceipttoPostings, returnreceipttoWord);
-            fillPostings(this.nfidDict, this.nfidPostings, nfidWord);
-            fillPostings(this.nffromDict, this.nffromPostings, nffromWord);
+            fillPostings(this.textDict, this.textPostings, entry.getKey(), textWords);
+            fillPostings(this.xrefDict, this.xrefPostings, entry.getKey(), xrefWords);
+            fillPostings(this.referencesDict, this.referencesPostings, entry.getKey(), refWords);
+            fillPostings(this.pathDict, this.pathPostings, entry.getKey(), pathWords);
+            fillPostings(this.newsgroupDict, this.newsgroupPostings, entry.getKey(), newsgroupWords);
+            fillPostings(this.keywordsDict, this.keywordsPostings, entry.getKey(), keywordsWords);
+            fillPostings(this.fromDict, this.fromPostings, entry.getKey(), fromWord);
+            fillPostings(this.subjectDict, this.subjectPostings, entry.getKey(), subjectWord);
+            fillPostings(this.messageidDict, this.messageidPostings, entry.getKey(), messageidWord);
+            fillPostings(this.dateDict, this.datePostings, entry.getKey(), dateWord);
+            fillPostings(this.organizationDict, this.organizationPostings, entry.getKey(), organizationWord);
+            fillPostings(this.replytoDict, this.replytoPostings, entry.getKey(), replytoWord);
+            fillPostings(this.distributionDict, this.distributionPostings, entry.getKey(), distributionWord);
+            fillPostings(this.followuptoDict, this.followuptoPostings, entry.getKey(), followuptoWord);
+            fillPostings(this.senderDict, this.senderPostings, entry.getKey(), senderWord);
+            fillPostings(this.nntppostinghostDict, this.nntppostinghostPostings, entry.getKey(), nntppostinghostWord);
+            fillPostings(this.articleidDict, this.articleidPostings, entry.getKey(), articleidWord);
+            fillPostings(this.returnreceipttoDict, this.returnreceipttoPostings, entry.getKey(), returnreceipttoWord);
+            fillPostings(this.nfidDict, this.nfidPostings, entry.getKey(), nfidWord);
+            fillPostings(this.nffromDict, this.nffromPostings, entry.getKey(), nffromWord);
         }
     }
 
@@ -164,13 +160,13 @@ public class BiGramIndex {
         }
     }
 
-    private void fillPostings(Map<String, Set<String>> index, Map<String, List<Posting>> postings, String[] words) {
+    private void fillPostings(Map<String, Set<String>> index, Map<String, List<Posting>> postings, String documentName, String[] words) {
         for (String key : index.keySet()) {
             postings.put(key, new LinkedList<Posting>());
         }
         for (int count = 0; count < words.length; ++count) {
             for (String bigram : tokenize(words[count])) {
-                postings.get(bigram).add(new Posting(docCount, count));
+                postings.get(bigram).add(new Posting(documentName, count));
             }
         }
     }
@@ -224,10 +220,10 @@ public class BiGramIndex {
     }
 
     class Posting {
-        final int doc;
+        final String doc;
         final int pos;
 
-        Posting(int document, int position) {
+        Posting(String document, int position) {
             this.doc = document;
             this.pos = position;
         }
