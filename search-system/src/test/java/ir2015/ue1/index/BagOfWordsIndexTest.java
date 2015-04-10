@@ -34,17 +34,17 @@ public class BagOfWordsIndexTest extends TestCase {
         String path = "../20_newsgroups_subset/alt.atheism";
         File folder = new File(path);
         System.out.println(folder.listFiles().length);
-//        for (File f : folder.listFiles()) {
-//            if(f.isFile()) {
-//                docs.add(new NewsgroupTopicParser().parse(path + "/" + f.getName()));
-//            }
-//        }
-        for (int i = 0; i < 10; ++i) {
-            File f = folder.listFiles()[i];
+        for (File f : folder.listFiles()) {
             if(f.isFile()) {
                 docs.put(f.getName(), new NewsgroupTopicParser().parse(path + "/" + f.getName()));
             }
         }
+//        for (int i = 0; i < 10; ++i) {
+//            File f = folder.listFiles()[i];
+//            if(f.isFile()) {
+//                docs.put(f.getName(), new NewsgroupTopicParser().parse(path + "/" + f.getName()));
+//            }
+//        }
     }
 
     public void tearDown() throws Exception {

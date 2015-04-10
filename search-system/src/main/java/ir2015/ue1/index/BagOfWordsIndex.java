@@ -160,7 +160,7 @@ public class BagOfWordsIndex {
         postings.put(documentName, new ArrayList(Collections.nCopies(dictionary.size(), 0)));
         int occurrenceIdx = postings.size()-1;
         for (int i = 0; i < tokens.length; ++i) {
-            List<Integer> currentOccurrence = postings.get(occurrenceIdx);
+            List<Integer> currentOccurrence = postings.get(documentName);
             currentOccurrence.set(dictionary.get(tokens[i]),
                     currentOccurrence.get(dictionary.get(tokens[i])) + 1);
         }

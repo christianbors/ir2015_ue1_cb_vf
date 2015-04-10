@@ -17,7 +17,7 @@ import java.util.*;
  * @since <pre>03/28/2015</pre>
  */
 public class BiGramIndexTest extends TestCase {
-    private List<Newsgroup> docs;
+    private Map<String, Newsgroup> docs;
 
     public BiGramIndexTest(String name) {
         super(name);
@@ -25,7 +25,7 @@ public class BiGramIndexTest extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        docs = new ArrayList<Newsgroup>();
+        docs = new HashMap<String, Newsgroup>();
         String path = "../20_newsgroups_subset/alt.atheism";
         File folder = new File(path);
         System.out.println(folder.listFiles().length);
@@ -33,7 +33,7 @@ public class BiGramIndexTest extends TestCase {
             File f = folder.listFiles()[i];
 //        for (File f : folder.listFiles()) {
             if(f.isFile()) {
-                docs.add(new NewsgroupTopicParser().parse(path + "/" + f.getName()));
+                docs.put(f.getName(), new NewsgroupTopicParser().parse(path + "/" + f.getName()));
             }
         }
     }
