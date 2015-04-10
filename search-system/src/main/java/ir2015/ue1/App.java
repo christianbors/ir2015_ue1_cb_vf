@@ -17,10 +17,35 @@ import org.apache.commons.cli.Options;
 public class App {
 
     public static void main(String[] args) {
+        Cli commandLine = new Cli(args);
+        commandLine.parse();
+        String filename = "";
+        if (commandLine.hasCaseFold()) {
+    public static void main(String[] args) {
         //CommandLine commandLine = new Cli(args).parse();
         Map<String, Newsgroup> documents = new LinkedHashMap<String, Newsgroup>();
         NewsgroupTopicParser ntp = new NewsgroupTopicParser();
 
+        }
+        if (commandLine.hasRemoveStopwords()) {
+
+        }
+        if (commandLine.hasStemming()) {
+
+        }
+        if (commandLine.hasFile()) {
+            filename = commandLine.getFilename();
+        }
+        // The vocabulary parameter determines
+        NewsgroupTopicParser ntp = new NewsgroupTopicParser();
+
+        // start search with topic file
+        if (!filename.isEmpty()) {
+            //TODO: add Topic-file to search function
+            Newsgroup ng = ntp.parse("topics/" + filename);
+            ntp.tokenizeText(ng);
+        }
+    }
         // Load all newsgroups + parse + tokenize
         // Whole result is in ArrayList<Newsgroup> documents
         FolderLoader folders = new FolderLoader("newsgroups/");

@@ -3,6 +3,7 @@ package ir2015.ue1;
 /**
  * Created by christianbors on 21/03/15.
  */
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -12,6 +13,16 @@ public class Cli {
     private static final Logger log = Logger.getLogger(Cli.class.getName());
     private String[] args = null;
     private Options options = new Options();
+
+    private boolean hasCaseFold = false;
+    private boolean hasRemoveStopwords = false;
+    private boolean hasStemming = false;
+
+    private String filename = "";
+
+    private final String caseFold = "case-fold";
+    private final String removeStopwords = "remove-stopwords";
+    private final String stemming = "stemming";
 
     public Cli(String[] args) {
 
@@ -45,15 +56,27 @@ public class Cli {
         options.addOption(file);
 */
         // Search
-        Option searchParameter = OptionBuilder.withArgName("parameters")
+        Option searchParameter = OptionBuilder.withArgName("search")
+                .hasArg()
+                .withLongOpt("search")
+                .withDescription("Search String: ")
+                .create("S");
+        options.addOption(searchParameter);
+        Option scoringMethod = OptionBuilder.withArgName("vocabulary")
                 .hasArgs()
-                .withLongOpt("parameter")
-                .create("p");
-        Option scoringMethod = OptionBuilder.withArgName("method")
-                .hasArgs()
-                .withLongOpt("scoring")
-                .withDescription("Scoring methods: \"case-fold\", \"remove-stopwords\", \"stemming\"")
-                .create("s");
+                .withLongOpt("vocabulary")
+                .withDescription("Scoring methods: \"" + caseFold + "\", \"" + removeStopwords + "\", \"" + stemming + "\"")
+                .create("v");
+        Option filename = OptionBuilder.withArgName("file")
+                .hasArg()
+                .withLongOpt("filename")
+                .withDescription("Filename to provide a topic to search for")
+                .create("f");
+        scoringMethod.setRequired(false);
+        filename.setRequired(false);
+        searchParameter.setRequired(true);
+        options.addOption(scoringMethod);
+        options.addOption(filename);
     }
 
     public CommandLine parse() {
@@ -66,12 +89,34 @@ public class Cli {
             if (cmd.hasOption("h"))
                 help();
 
+            if (!cmd.hasOption("S")) {
+                throw new ParseException("missing Search parameter!");
+            }
+
+            if (cmd.hasOption("f")) {
+                filename = cmd.getOptionValue("f");
+            }
+
             if (cmd.hasOption("v")) {
-                log.log(Level.INFO, "Using cli argument -v=" + cmd.getOptionValue("v"));
                 // Whatever you want to do with the setting goes here
+                log.log(Level.INFO, "Using cli argument -v= " + cmd.getOptionValue("v"));
+                StringTokenizer tokenizer = new StringTokenizer(cmd.getOptionValue("v"), ",");
+                while(tokenizer.hasMoreTokens()) {
+                    String option = tokenizer.nextToken();
+                    if(option.equals(caseFold)) {
+                        hasCaseFold = true;
+                    } else if (option.equals(removeStopwords)) {
+                        hasRemoveStopwords = true;
+                    } else if (option.equals(stemming)) {
+                        hasStemming = true;
+                    } else {
+                        throw new ParseException("unrecognized -v argument: " + option);
+                    }
+                }
             } else {
-                log.log(Level.SEVERE, "Missing v option");
-                help();
+//                log.log(Level.SEVERE, "Missing v option");
+//                help();
+                log.log(Level.INFO, "no vocabulary option submitted");
             }
         } catch (ParseException e) {
             log.log(Level.SEVERE, "Failed to parse command line properties", e);
@@ -86,6 +131,26 @@ public class Cli {
 
         formatter.printHelp("Search System", options);
         System.exit(0);
+    }
+
+    public boolean hasCaseFold() {
+        return hasCaseFold;
+    }
+
+    public boolean hasRemoveStopwords() {
+        return hasRemoveStopwords;
+    }
+
+    public boolean hasStemming() {
+        return hasStemming;
+    }
+
+    public boolean hasFile() {
+        return !filename.isEmpty();
+    }
+
+    public String getFilename() {
+        return filename;
     }
 }
 
