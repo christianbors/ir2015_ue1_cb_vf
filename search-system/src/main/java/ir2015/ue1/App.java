@@ -20,12 +20,12 @@ public class App {
         Cli commandLine = new Cli(args);
         commandLine.parse();
         String filename = "";
-        if (commandLine.hasCaseFold()) {
-    public static void main(String[] args) {
+
         //CommandLine commandLine = new Cli(args).parse();
         Map<String, Newsgroup> documents = new LinkedHashMap<String, Newsgroup>();
         NewsgroupTopicParser ntp = new NewsgroupTopicParser();
 
+        if (commandLine.hasCaseFold()) {
         }
         if (commandLine.hasRemoveStopwords()) {
 
@@ -36,8 +36,7 @@ public class App {
         if (commandLine.hasFile()) {
             filename = commandLine.getFilename();
         }
-        // The vocabulary parameter determines
-        NewsgroupTopicParser ntp = new NewsgroupTopicParser();
+        // The vocabulary parameter determine
 
         // start search with topic file
         if (!filename.isEmpty()) {
@@ -45,7 +44,7 @@ public class App {
             Newsgroup ng = ntp.parse("topics/" + filename);
             ntp.tokenizeText(ng);
         }
-    }
+
         // Load all newsgroups + parse + tokenize
         // Whole result is in ArrayList<Newsgroup> documents
         FolderLoader folders = new FolderLoader("newsgroups/");
@@ -104,6 +103,7 @@ public class App {
         BagOfWordsIndex bow_topic = new BagOfWordsIndex(topics);
         //System.out.println(bow_topic.getTextDictionary());
         //System.out.println(bow_topic.getTextOccurrences().toString());
+
         search_terms(bow_doc, bow_topic);
     }
 
@@ -189,6 +189,7 @@ public class App {
 
         System.out.println(results.toString());
     }
+
     public static double getDocumentFrequency(Integer idx, Map<String, List<Integer>> doc)
     {
         // returns the number of documents that contain the term
@@ -203,7 +204,6 @@ public class App {
         }
 
         return df;
-
     }
 
     public static double getIdf(double df, int num_doc)
@@ -245,5 +245,4 @@ public class App {
     {
         return tf * idf;
     }
-
 }
