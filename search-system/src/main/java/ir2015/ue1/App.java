@@ -12,13 +12,31 @@ import org.apache.commons.cli.Options;
 
 public class App {
 
-     public static void main(String[] args) {
-         //CommandLine commandLine = new Cli(args).parse();
+    public static void main(String[] args) {
+        Cli commandLine = new Cli(args);
+        commandLine.parse();
+        String filename = "";
+        if (commandLine.hasCaseFold()) {
 
-         // The vocabulary parameter determines
-         NewsgroupTopicParser ntp = new NewsgroupTopicParser();
-         Newsgroup ng = ntp.parse("topics/topic1");
-         ntp.tokenizeText(ng);
-     }
+        }
+        if (commandLine.hasRemoveStopwords()) {
+
+        }
+        if (commandLine.hasStemming()) {
+
+        }
+        if (commandLine.hasFile()) {
+            filename = commandLine.getFilename();
+        }
+        // The vocabulary parameter determines
+        NewsgroupTopicParser ntp = new NewsgroupTopicParser();
+
+        // start search with topic file
+        if (!filename.isEmpty()) {
+            //TODO: add Topic-file to search function
+            Newsgroup ng = ntp.parse("topics/" + filename);
+            ntp.tokenizeText(ng);
+        }
+    }
 
 }
