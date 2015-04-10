@@ -2,8 +2,6 @@ package ir2015.ue1.index;
 
 import com.google.gson.Gson;
 import ir2015.ue1.model.Newsgroup;
-import org.apache.lucene.analysis.ngram.NGramTokenizer;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 import java.io.*;
 import java.util.*;
@@ -13,8 +11,6 @@ import java.util.*;
  */
 public class BiGramIndex {
 
-    private CharTermAttribute charTermAttribute;
-    private NGramTokenizer bigramTokenizer;
     private Map<String, Set<String>> textDict = new LinkedHashMap<String, Set<String>>();
     private Map<String, Set<String>> xrefDict = new LinkedHashMap<String, Set<String>>();
     private Map<String, Set<String>> referencesDict = new LinkedHashMap<String, Set<String>>();
