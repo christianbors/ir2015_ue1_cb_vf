@@ -50,5 +50,5 @@ public class BiGramIndexTest extends TestCase {
     public static Test suite() {
         return new TestSuite(BiGramIndexTest.class);
     }
-} 
+}
 

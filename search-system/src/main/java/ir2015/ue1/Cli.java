@@ -3,6 +3,7 @@ package ir2015.ue1;
 /**
  * Created by christianbors on 21/03/15.
  */
+import java.io.File;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +19,8 @@ public class Cli {
     private boolean hasRemoveStopwords = false;
     private boolean hasStemming = false;
 
-    private String filename = "";
+    private String topicsPath = "../topics/";
+    private String topicFilename = "";
 
     private final String caseFold = "case-fold";
     private final String removeStopwords = "remove-stopwords";
@@ -47,7 +49,7 @@ public class Cli {
                 .withDescription("Normalize vocabulary by applying a combination of " +
                         "\"case-fold\", \"remove-stopwords\", \"stemming\"")
                 .create("n");
-        Option file      = OptionBuilder.withArgName("filename")
+        Option file      = OptionBuilder.withArgName("topicFilename")
                 .hasArg()
                 .withDescription("input file for search system")
                 .withLongOpt("file")
@@ -56,12 +58,6 @@ public class Cli {
         options.addOption(file);
 */
         // Search
-        Option searchParameter = OptionBuilder.withArgName("search")
-                .hasArg()
-                .withLongOpt("search")
-                .withDescription("Search String: ")
-                .create("S");
-        options.addOption(searchParameter);
         Option scoringMethod = OptionBuilder.withArgName("vocabulary")
                 .hasArgs()
                 .withLongOpt("vocabulary")
@@ -69,12 +65,10 @@ public class Cli {
                 .create("v");
         Option filename = OptionBuilder.withArgName("file")
                 .hasArg()
-                .withLongOpt("filename")
+                .withLongOpt("topicFilename")
                 .withDescription("Filename to provide a topic to search for")
                 .create("f");
         scoringMethod.setRequired(false);
-        filename.setRequired(false);
-        searchParameter.setRequired(true);
         options.addOption(scoringMethod);
         options.addOption(filename);
     }
@@ -89,12 +83,14 @@ public class Cli {
             if (cmd.hasOption("h"))
                 help();
 
-            if (!cmd.hasOption("S")) {
-                throw new ParseException("missing Search parameter!");
-            }
-
             if (cmd.hasOption("f")) {
-                filename = cmd.getOptionValue("f");
+                topicFilename = cmd.getOptionValue("f");
+                File file = new File(topicsPath + topicFilename);
+                if (!file.exists()) {
+                    System.out.println(file.getAbsolutePath());
+                    System.out.println("File not found: " + topicFilename);
+                    System.exit(0);
+                }
             }
 
             if (cmd.hasOption("v")) {
@@ -116,7 +112,7 @@ public class Cli {
             } else {
 //                log.log(Level.SEVERE, "Missing v option");
 //                help();
-                log.log(Level.INFO, "no vocabulary option submitted");
+//                log.log(Level.WARNING, "no vocabulary option submitted");
             }
         } catch (ParseException e) {
             log.log(Level.SEVERE, "Failed to parse command line properties", e);
@@ -146,11 +142,11 @@ public class Cli {
     }
 
     public boolean hasFile() {
-        return !filename.isEmpty();
+        return !topicFilename.isEmpty();
     }
 
-    public String getFilename() {
-        return filename;
+    public String getTopicFilename() {
+        return topicFilename;
     }
 }
 
