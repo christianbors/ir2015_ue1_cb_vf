@@ -60,7 +60,7 @@ public class BagOfWordsIndexTest extends TestCase {
     public void testListSize() throws Exception {
         BagOfWordsIndex idx = new BagOfWordsIndex(docs);
         System.out.println(idx.getTextDictionary().size());
-//        for (List<Integer> occurrence : idx.getTextOccurrences()) {
+//        for (List<Integer> occurrence : idx.getTextPostings()) {
 //            System.out.println(occurrence.toString());
 //        }
 //        System.out.println(idx.getXrefDict().toString());
