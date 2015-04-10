@@ -169,6 +169,7 @@ public class NewsgroupTopicParser {
         }
 
         ng.setText(text_content.toString());
+        //System.out.println(ng.toString());
         return ng;
     }
 
@@ -181,10 +182,11 @@ public class NewsgroupTopicParser {
         // replace all non alpha numerical characters
         // and convert result to lower case
         text = text.replaceAll("[^\\w\\s]", "");
+        text = text.replaceAll("_", "");
         text = text.toLowerCase();
 
         ArrayList<String> tokens = new ArrayList<String>();
-
+        ArrayList<String> final_tokens = new ArrayList<String>();
         // add the tokens to the newsgroup arraylist tokens
         StringTokenizer tokenizer = new StringTokenizer(text);
         while(tokenizer.hasMoreTokens())
@@ -193,25 +195,36 @@ public class NewsgroupTopicParser {
         }
 
         // filter stop words
+
         for (int i = 0; i < tokens.size(); i++) {
             // get the item as string
+            boolean add = true;
             for (int j = 0; j < stopwords.getStopwords().length; j++) {
+                //System.out.print(stopwords.getStopwords()[j] + " " + j + "\t");
+                //System.out.println(tokens.get(i) + " " + i);
                 if (stopwords.getStopwords()[j].contains(tokens.get(i))) {
-                    tokens.remove(i);
+                    //tokens.remove(i);
+                    add = false;
                 }
+            }
+
+            if(add)
+            {
+                //System.out.println("Adding " + tokens.get(i) + " to final");
+                final_tokens.add(tokens.get(i));
             }
         }
         // finally add the filtered result to the newsgroup
-        for(int i = 0; i < tokens.size(); i++)
+        for(int i = 0; i < final_tokens.size(); i++)
         {
-            stemmer.setCurrent(tokens.get(i));
+            stemmer.setCurrent(final_tokens.get(i));
             if(stemmer.stem())
             {
                 String s = stemmer.getCurrent();
                 if(!isNumber(s))
                 {
                     ng.setTokens(s);
-                    System.out.println(s);
+                    //System.out.println(s);
                 }
                 else
                 {

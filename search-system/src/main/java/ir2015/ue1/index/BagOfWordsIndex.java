@@ -34,6 +34,7 @@ public class BagOfWordsIndex {
     private Map<String, Integer> returnreceipttoDict= new LinkedHashMap<String, Integer>();
     private Map<String, Integer> nfidDict= new LinkedHashMap<String, Integer>();
     private Map<String, Integer> nffromDict= new LinkedHashMap<String, Integer>();
+    private Map<String, Integer> term_freq = new LinkedHashMap<String, Integer>();
 
     //String stores the filename, List<Integer> stores the occurrences for each word in the document
     private Map<String, List<Integer>> textPostings = new LinkedHashMap<String, List<Integer>>();
@@ -57,8 +58,11 @@ public class BagOfWordsIndex {
     private Map<String, List<Integer>> nfidPostings = new LinkedHashMap<String, List<Integer>>();
     private Map<String, List<Integer>> nffromPostings = new LinkedHashMap<String, List<Integer>>();
 
+
     public BagOfWordsIndex(Map<String, Newsgroup> documents) {
+
         for (Map.Entry<String, Newsgroup> entry : documents.entrySet()) {
+            term_freq.put(entry.getKey(), entry.getValue().getTokens().size());
             String[] textTokens = entry.getValue().getTokens().toArray(new String[documents.size()]);
             String[] xrefTokens = entry.getValue().getXref().toArray(new String[0]);
             String[] refTokens = entry.getValue().getReferences().toArray(new String[0]);
@@ -195,6 +199,11 @@ public class BagOfWordsIndex {
             e.printStackTrace();
         }
         return indexFile;
+    }
+
+    public Map<String, Integer> getTerm_freq()
+    {
+        return term_freq;
     }
 
     public Map<String, Integer> getTextDictionary() {
