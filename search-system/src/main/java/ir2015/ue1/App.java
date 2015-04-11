@@ -24,24 +24,24 @@ public class App {
         boolean removeStopWords = false;
         boolean stemming = false;
 
-        Cli commandLine = new Cli(args);
-        commandLine.parse();
+        //Cli commandLine = new Cli(args);
+        //commandLine.parse();
         String filename = "";
 
         Map<String, Newsgroup> documents = new LinkedHashMap<String, Newsgroup>();
 
-        if (commandLine.hasCaseFold()) {
+       // if (commandLine.hasCaseFold()) {
             caseFold = true;
-        }
-        if (commandLine.hasRemoveStopwords()) {
+        //}
+        //if (commandLine.hasRemoveStopwords()) {
             removeStopWords = true;
-        }
-        if (commandLine.hasStemming()) {
+        //}
+        //if (commandLine.hasStemming()) {
             stemming = true;
-        }
-        if (commandLine.hasFile()) {
-            filename = commandLine.getFilename();
-        }
+        //}
+        //if (commandLine.hasFile()) {
+            //filename = commandLine.getFilename();
+        //}
         NewsgroupTopicParser ntp = new NewsgroupTopicParser(caseFold, removeStopWords, stemming);
         // The vocabulary parameter determine
 
@@ -104,16 +104,17 @@ public class App {
         //System.out.println(bow.getTextDictionary().toString());
         //System.out.println(bow.getTextOccurrences().toString());
 
-        Map<String, Newsgroup> topics = new LinkedHashMap<String, Newsgroup>();
+
         Newsgroup ng = ntp.parse("topics/topic8");
         ntp.tokenizeText(ng);
-        topics.put("topics/topic8", ng);
 
-        BagOfWordsIndex bow_topic = new BagOfWordsIndex(topics);
+
+
         //System.out.println(bow_topic.getTextDictionary());
         //System.out.println(bow_topic.getTextOccurrences().toString());
 
-        search_terms(bow_doc, bow_topic);
+        score(bow_doc, ng.getTokens());
+        System.out.println("Done.");
     }
 
     // Parse all files in Newsgroup directories
@@ -135,67 +136,190 @@ public class App {
     // Returns a list of results, which should be sorted later
     // Top 100 highest scores to be returned in format:
     // <topicid> <Q#> <documentid> <rank> <score> <run-name>
-    public static void search_terms(BagOfWordsIndex bow_d, BagOfWordsIndex bow_t)
+    public static void score(BagOfWordsIndex doc, ArrayList<String> query)
     {
-        double tf; // term frequency
-        double df; // document frequency
-        double idf; // inverse document frequency
-        double tf_idf; // term frequency inverse document frequency
-        double score = 0.0f; // query score
+        double df = 0.0f;
+        double tf = 0.0f;
+        double idf = 0.0f;
+        double tf_idf = 0.0f;
+        double score = 0.0f;
 
-        // Save results here
-        // FILENAME, SCORE
-        Map<String, Double> results = new LinkedHashMap<String, Double>();
+        Map<String, Double> results = new HashMap<String, Double>();
 
-        // dictionary / terms
-        Map<String, Integer> d_terms = bow_d.getTextDictionary();
-        Map<String, Integer> term_terms = bow_t.getTextDictionary();
-
-        // postings / frequency
-        Map<String, List<Integer>> term_freq = bow_t.getTextPostings();
-        Map<String, List<Integer>> d_freq = bow_d.getTextPostings();
-
-        // term count per doc
-        Map<String, Integer> ttf = bow_d.getTerm_freq();
-        //System.out.println(d_freq);
-        // go through all terms in query
-        for(Map.Entry<String, Integer> entry_t : term_terms.entrySet())
+        // docname, postings list
+        Map<String, List<Integer>> doc_postings = doc.getTextPostings();
+        // doc term, freq
+        Map<String, Integer> doc_terms = doc.getTextDictionary();
+        // list of doc terms
+        ArrayList<String> doc_term_keyset = new ArrayList(doc_terms.keySet());
+        String file_name = "";
+        // go through all documents in set
+        for(Map.Entry<String, List<Integer>> entry : doc_postings.entrySet())
         {
-            // get terms
-            String t_term = entry_t.getKey();
-            String file_name = "";
-            // go through all terms in document
-            for(Map.Entry<String, Integer> entry_d : d_terms.entrySet())
-            {
-                String d_term = entry_d.getKey();
-                //System.out.println("t " + t_term + " d " + d_term );
-                // check if equal
-                if(t_term.equals(d_term))
-                {
-                    // we got a term match between query and document
-                    // get index of document term
-                    // check in occurences the frequency
-                    //System.out.println("Match: " + t_term + " @ " + entry_d.getValue());
+            file_name = entry.getKey();
+            ArrayList<Integer> postings_list = new ArrayList(entry.getValue());
 
-                    // number of documents that contain the term we found a match for
-                    df = getDocumentFrequency(entry_d.getValue(), d_freq);
-                    // inverse document frequency
-                    idf = getIdf(df, d_freq.size());
-                    // term frequency
-                    tf = getTf(d_freq, entry_d.getValue(), ttf);
-                    // compute tfidf = tf * idf
-                    tf_idf = getTfIdf(tf, idf);
-                    score += tf_idf;
+            // get the postings list for each document
+            for(int i = 0; i < postings_list.size(); i++)
+            {
+                String doc_term = "";
+                int idx = 0;
+                if(postings_list.get(i) != 0)
+                {
+                    if(i!=91) {
+                        doc_term = doc_term_keyset.get(i);
+                    }
                 }
-                // score here
-                // score(query, document) = sum ( tf_idf(term, doc) ) over all terms in query
+                // try to find out which string is associated with each non-zero entry in the postings list
+                // and compare that to the list of terms from the query
+               // for(int k = 0; k < doc_term_keyset.size(); k++)
+                //{
+                    // if entry @ postings list for this doc is not null
+                    // the string is present in the documents terms
+                    // get that doc term and start comparing to the query terms
+                    // save the index of this term
+                  //  if(postings_list.get(k) != 0)
+                    //{
+                      //  idx = k;
+                        //System.out.println(k);
+                        // Only Throws NPE @ Index 91
+                        // For some reason in postings file @ index 91 there is nothing
+                        // @ BOW Construction
+                        //if(k != 91) {
+                          //  doc_term = doc_term_keyset.get(k);
+                        //}
+                        // Throws NPE ?
+
+                        // go through each term in query
+                        // start comparing once we have a match
+                        // compute TF / DF / IDF / TF-IDF of the match
+                        // add to score
+                        for(int j = 0; j < query.size(); j++)
+                        {
+                            String query_term = query.get(j);
+
+                            // term match
+                            if(doc_term.equals(query_term))
+                            {
+                                //System.out.println("TERM MATCH");
+                                //System.out.println("DOC: " + file_name + " D:" + doc_term + " T:" + query_term);
+
+                                // send document idx + postings file to compute DF
+                                df = getDocumentFrequency(idx, doc_postings);
+                                // send DF + number of documents to compute IDF
+                                idf = getIdf(df, doc_postings.size());
+                                // send postings list + idx of term we are checking
+                                tf = getTf(postings_list, idx);
+                                // compute tf_idf as tf * idf
+                                tf_idf = getTfIdf(tf, idf);
+                                // add up score
+                                score += tf_idf;
+                          //  }
+                        //}
+                    }
+                }
             }
-            // TODO: How to resolve filename?
             results.put(file_name, score);
-            score = 0.0f;
+            //System.out.print(".");
         }
-        System.out.println(results.toString());
+        // 400 RESULTS
+        // TODO:  all 0.0 scored?
+        // Print out sorted by name (can sort by score later)
+
+        Map<String, Double> map = new TreeMap<String, Double>(results);
+        for(Map.Entry<String, Double> entry : map.entrySet())
+        {
+            System.out.println(entry.getKey() + " : " + entry.getValue());
+        }
+
     }
+
+    // OLD WRONG CODE
+    // search document , query
+    // Computes the Score of each term in the query to the document
+    // Returns a list of results, which should be sorted later
+    // Top 100 highest scores to be returned in format:
+    // <topicid> <Q#> <documentid> <rank> <score> <run-name>
+//    public static void search_terms(BagOfWordsIndex bow_d, BagOfWordsIndex bow_t)
+//    {
+//        // stuff
+//        double tf; // term frequency
+//        double df; // document frequency
+//        double idf; // inverse document frequency
+//        double tf_idf; // term frequency inverse document frequency
+//        double score = 0.0f; // query score
+//
+//        // Save results here
+//        // FILENAME, SCORE
+//        Map<String, Double> results = new LinkedHashMap<String, Double>();
+//
+//        // dictionary / terms
+//        Map<String, Integer> d_terms = bow_d.getTextDictionary();
+//        Map<String, Integer> term_terms = bow_t.getTextDictionary();
+//
+//        // postings / frequency
+//        Map<String, List<Integer>> term_freq = bow_t.getTextPostings();
+//        Map<String, List<Integer>> d_freq = bow_d.getTextPostings();
+//
+//        // term count per doc
+//        Map<String, Integer> ttf = bow_d.getTerm_freq();
+//        //System.out.println(d_freq);
+//        // go through all terms in query
+//        int idx = 0;
+//        System.out.println("Q term " + term_terms.size());
+//        System.out.println("D term " + d_terms.values());
+//        System.out.println("T freq " + term_freq.size());
+//        System.out.println("D freq " + d_freq.size());
+//
+//        for(Map.Entry<String, Integer> entry_t : term_terms.entrySet())
+//        {
+//            // get terms
+//            String t_term = entry_t.getKey();
+//            String file_name = "";
+//            // go through all terms in document
+//
+//            for(Map.Entry<String, Integer> entry_d : d_terms.entrySet())
+//            {
+//                String d_term = entry_d.getKey();
+//                //System.out.println("t " + t_term + " d " + d_term );
+//                // check if equal
+//                if(t_term.equals(d_term)) {
+//                    // we got a term match between query and document
+//                    // get index of document term
+//                    // check in occurences the frequency
+//                    //System.out.println("Match: " + t_term + " @ " + entry_d.getValue());
+//
+//                    // number of documents that contain the term we found a match for
+//                    df = getDocumentFrequency(entry_d.getValue(), d_freq);
+//                    // inverse document frequency
+//                    idf = getIdf(df, d_freq.size());
+//                    // term frequency
+//                    tf = getTf(d_freq, entry_d.getValue(), ttf);
+//                    // compute tfidf = tf * idf
+//                    tf_idf = getTfIdf(tf, idf);
+//                    score += tf_idf;
+//                }
+//                // score here
+//                // score(query, document) = sum ( tf_idf(term, doc) ) over all terms in query
+//            }
+//            // How to resolve filename?
+//            //System.out.println(score);
+//            // get file name?
+//            List<String> keys = new ArrayList(d_freq.keySet());
+//            for(int i = 0; i < keys.size(); i++)
+//            {
+//                if(i == idx) {
+//                    file_name = keys.get(i);
+//                    break;
+//                }
+//            }
+//            results.put(file_name, score);
+//            idx++;
+//            score = 0.0f;
+//        }
+//        //System.out.println(results.toString());
+//        System.out.println(results.size());
+//    }
 
     // Compute the Document Frequency
     public static double getDocumentFrequency(Integer idx, Map<String, List<Integer>> doc)
@@ -210,6 +334,7 @@ public class App {
                 df = df + 1;
             }
         }
+
         return df;
     }
 
@@ -224,32 +349,52 @@ public class App {
         return idf;
     }
 
+    // OLD WRONG CODE
     // Compute the Term Frequency
-    public static double getTf(Map<String, List<Integer>> doc, Integer idx, Map<String, Integer> ttf)
-    {
-        double tf = 0.0f;
-        double num_terms = 0.0f;
-        for(Map.Entry<String, List<Integer>> entry : doc.entrySet())
-        {
-            String file_name = entry.getKey();
+//    public static double getTf(Map<String, List<Integer>> doc, Integer idx)
+//    {
+//        double tf = 0.0f;
+//        double num_terms = 0.0f;
+//        for(Map.Entry<String, List<Integer>> entry : doc.entrySet())
+//        {
+//            String file_name = entry.getKey();
+//
+//            //get total number of terms in doc from ttf
+//            num_terms = ttf.get(file_name);
+//            List<Integer> posting = entry.getValue();
+//            if(posting.get(idx) != 0)
+//            {
+//                tf = tf + 1;
+//            }
+//        }
+//        if(num_terms == 0)
+//        {
+//            System.out.println("DIV BY 0");
+//        }
+//        try {
+//            tf = tf / num_terms;
+//        }
+//        catch(ArithmeticException e)
+//        {
+//            // probably div by 0 => NaN result
+//        }
+//
+//        return tf;
+//    }
 
-            //get total number of terms in doc from ttf
-            num_terms = ttf.get(file_name);
-            List<Integer> posting = entry.getValue();
-            if(posting.get(idx) != 0)
-            {
-                tf = tf + 1;
+    // Compute the Term Frequency
+    public static double getTf(ArrayList<Integer> postings, Integer idx)
+    {
+        int num_terms = 0;
+        int term_freq = postings.get(idx);
+        for(int i = 0; i < postings.size(); i++)
+        {
+            if(postings.get(i) != 0) {
+                num_terms++;
             }
         }
-        if(num_terms == 0)
-        {
-            System.out.println("DIV BY 0");
-        }
-        tf = tf / num_terms;
-
-        return tf;
+        return term_freq/num_terms;
     }
-
     // Compute TF-IDF for the term, document
     public static double getTfIdf(double tf, double idf)
     {

@@ -40,6 +40,15 @@ public class NewsgroupTopicParser {
         }
     }
 
+    public NewsgroupTopicParser()
+    {
+        this.caseFold = true;
+        this.removeStopwords = true;
+        this.stemming = true;
+
+        stemmer = new PorterStemmer();
+        stopwords = Stopwords.getInstance();
+    }
     // Parses through meta data and content
     // Creates a Newsgroup item and sets all relevant information
     public Newsgroup parse(String file_name)
