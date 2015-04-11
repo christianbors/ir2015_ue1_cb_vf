@@ -14,28 +14,35 @@ import java.util.logging.Logger;
 
 import org.apache.commons.cli.Options;
 
+
+
 public class App {
 
+
     public static void main(String[] args) {
+        boolean caseFold = false;
+        boolean removeStopWords = false;
+        boolean stemming = false;
+
         Cli commandLine = new Cli(args);
         commandLine.parse();
         String filename = "";
 
-        //CommandLine commandLine = new Cli(args).parse();
         Map<String, Newsgroup> documents = new LinkedHashMap<String, Newsgroup>();
-        NewsgroupTopicParser ntp = new NewsgroupTopicParser();
 
         if (commandLine.hasCaseFold()) {
+            caseFold = true;
         }
         if (commandLine.hasRemoveStopwords()) {
-
+            removeStopWords = true;
         }
         if (commandLine.hasStemming()) {
-
+            stemming = true;
         }
         if (commandLine.hasFile()) {
             filename = commandLine.getFilename();
         }
+        NewsgroupTopicParser ntp = new NewsgroupTopicParser(caseFold, removeStopWords, stemming);
         // The vocabulary parameter determine
 
         // start search with topic file
@@ -69,6 +76,7 @@ public class App {
 //        FileWrapper misc = folders.getFiles("talk.politics.misc");
 //        FileWrapper religion_misc = folders.getFiles("talk.religion.misc");
 //        //System.out.println(atheism.toString());
+        // Parse all files
         parse_files_list(atheism ,ntp, documents);
 //        parse_files_list(graphics ,ntp, documents);
 //        parse_files_list(windows ,ntp, documents);
@@ -89,6 +97,7 @@ public class App {
 //        parse_files_list(mideast ,ntp, documents);
 //        parse_files_list(misc ,ntp, documents);
 //        parse_files_list(religion_misc ,ntp, documents);
+
         System.out.println("Files loaded & parsed.");
         // Create BoW/Bigram indexes
         BagOfWordsIndex bow_doc = new BagOfWordsIndex(documents);
