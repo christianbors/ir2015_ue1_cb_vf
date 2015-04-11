@@ -131,11 +131,12 @@ public class App {
     // search document , query
     public static void search_terms(BagOfWordsIndex bow_d, BagOfWordsIndex bow_t)
     {
-        double tf;
-        double df;
-        double idf;
-        double tf_idf;
-        double score = 0.0f;
+        // stuff
+        double tf; // term frequency
+        double df; // document frequency
+        double idf; // inverse document frequency
+        double tf_idf; // term frequency inverse document frequency
+        double score = 0.0f; // query score
 
         // Save results here
         // FILENAME, SCORE
@@ -164,7 +165,6 @@ public class App {
                 String d_term = entry_d.getKey();
                 //System.out.println("t " + t_term + " d " + d_term );
                 // check if equal
-
                 if(t_term.equals(d_term)) {
                     // we got a term match between query and document
                     // get index of document term
@@ -176,9 +176,8 @@ public class App {
                     // inverse document frequency
                     idf = getIdf(df, d_freq.size());
                     // term frequency
-
                     tf = getTf(d_freq, entry_d.getValue(), ttf);
-                    // computer tfidf = tf * idf
+                    // compute tfidf = tf * idf
                     tf_idf = getTfIdf(tf, idf);
                     score += tf_idf;
                 }
