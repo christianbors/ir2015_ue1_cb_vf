@@ -1,10 +1,12 @@
 package ir2015.ue1.parser;
 
-import com.sun.deploy.util.StringUtils;
 import ir2015.ue1.model.Newsgroup;
 import org.tartarus.snowball.ext.PorterStemmer;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -38,6 +40,8 @@ public class NewsgroupTopicParser {
         }
     }
 
+    // Parses through meta data and content
+    // Creates a Newsgroup item and sets all relevant information
     public Newsgroup parse(String file_name)
     {
         Newsgroup ng = new Newsgroup();
@@ -233,7 +237,6 @@ public class NewsgroupTopicParser {
         }
 
         // filter stop words
-
         for (int i = 0; i < tokens.size(); i++)
         {
             // get the item as string
@@ -288,6 +291,8 @@ public class NewsgroupTopicParser {
         }
     }
 
+    // Internal function
+    // Check if sting is a number
     private static boolean isNumber(String s)
     {
         try

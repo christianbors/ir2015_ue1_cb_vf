@@ -116,6 +116,8 @@ public class App {
         search_terms(bow_doc, bow_topic);
     }
 
+    // Parse all files in Newsgroup directories
+    // Put them in the document map to construct the BoW/Bi-Gram indexes later
     public static void parse_files_list(FileWrapper f, NewsgroupTopicParser ntp, Map<String, Newsgroup> documents)
     {
         System.out.println("Loading & parsing: " + f.getName());
@@ -129,9 +131,12 @@ public class App {
     }
 
     // search document , query
+    // Computes the Score of each term in the query to the document
+    // Returns a list of results, which should be sorted later
+    // Top 100 highest scores to be returned in format:
+    // <topicid> <Q#> <documentid> <rank> <score> <run-name>
     public static void search_terms(BagOfWordsIndex bow_d, BagOfWordsIndex bow_t)
     {
-        // stuff
         double tf; // term frequency
         double df; // document frequency
         double idf; // inverse document frequency
@@ -165,7 +170,8 @@ public class App {
                 String d_term = entry_d.getKey();
                 //System.out.println("t " + t_term + " d " + d_term );
                 // check if equal
-                if(t_term.equals(d_term)) {
+                if(t_term.equals(d_term))
+                {
                     // we got a term match between query and document
                     // get index of document term
                     // check in occurences the frequency
@@ -183,21 +189,15 @@ public class App {
                 }
                 // score here
                 // score(query, document) = sum ( tf_idf(term, doc) ) over all terms in query
-
-
-
-
             }
-            // How to resolve filename?
+            // TODO: How to resolve filename?
             results.put(file_name, score);
             score = 0.0f;
-
         }
-
-
         System.out.println(results.toString());
     }
 
+    // Compute the Document Frequency
     public static double getDocumentFrequency(Integer idx, Map<String, List<Integer>> doc)
     {
         // returns the number of documents that contain the term
@@ -210,10 +210,10 @@ public class App {
                 df = df + 1;
             }
         }
-
         return df;
     }
 
+    // Compute the Inverse Document Frequency
     public static double getIdf(double df, int num_doc)
     {
         // simple math stuff
@@ -224,6 +224,7 @@ public class App {
         return idf;
     }
 
+    // Compute the Term Frequency
     public static double getTf(Map<String, List<Integer>> doc, Integer idx, Map<String, Integer> ttf)
     {
         double tf = 0.0f;
@@ -249,6 +250,7 @@ public class App {
         return tf;
     }
 
+    // Compute TF-IDF for the term, document
     public static double getTfIdf(double tf, double idf)
     {
         return tf * idf;

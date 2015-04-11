@@ -218,6 +218,8 @@ public class Newsgroup {
         return new Gson().toJson(this);
     }
 
+    // Override of toString method
+    @Override
     public String toString()
     {
         StringBuilder out = new StringBuilder();
