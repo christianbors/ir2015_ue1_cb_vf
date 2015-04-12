@@ -32,26 +32,26 @@ public class BiGramIndex {
     private Map<String, Set<String>> nfidDict= new LinkedHashMap<String, Set<String>>();
     private Map<String, Set<String>> nffromDict= new LinkedHashMap<String, Set<String>>();
 
-    private Map<String, List<Posting>> textPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> xrefPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> referencesPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> pathPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> newsgroupPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> keywordsPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> fromPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> subjectPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> messageidPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> datePostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> organizationPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> replytoPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> distributionPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> followuptoPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> senderPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> nntppostinghostPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> articleidPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> returnreceipttoPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> nfidPostings = new LinkedHashMap<String, List<Posting>>();
-    private Map<String, List<Posting>> nffromPostings = new LinkedHashMap<String, List<Posting>>();
+    private Map<String, Set<Posting>> textPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> xrefPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> referencesPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> pathPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> newsgroupPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> keywordsPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> fromPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> subjectPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> messageidPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> datePostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> organizationPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> replytoPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> distributionPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> followuptoPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> senderPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> nntppostinghostPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> articleidPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> returnreceipttoPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> nfidPostings = new TreeMap<String, Set<Posting>>();
+    private Map<String, Set<Posting>> nffromPostings = new TreeMap<String, Set<Posting>>();
 
     public BiGramIndex(Map<String, Newsgroup> documents) {
         for(Map.Entry<String, Newsgroup> entry : documents.entrySet()) {
@@ -152,7 +152,7 @@ public class BiGramIndex {
                 if (index.containsKey(bigram)) {
                     index.get(bigram).add(word);
                 } else {
-                    Set<String> wordList = new HashSet<String>();
+                    Set<String> wordList = new TreeSet<String>();
                     wordList.add(word);
                     index.put(bigram, wordList);
                 }
@@ -160,9 +160,9 @@ public class BiGramIndex {
         }
     }
 
-    private void fillPostings(Map<String, Set<String>> index, Map<String, List<Posting>> postings, String documentName, String[] words) {
+    private void fillPostings(Map<String, Set<String>> index, Map<String, Set<Posting>> postings, String documentName, String[] words) {
         for (String key : index.keySet()) {
-            postings.put(key, new LinkedList<Posting>());
+            postings.put(key, new HashSet<Posting>());
         }
         for (int count = 0; count < words.length; ++count) {
             for (String bigram : tokenize(words[count])) {
@@ -172,7 +172,7 @@ public class BiGramIndex {
     }
 
     private Set<String> tokenize(String word) {
-        Set<String> wordset = new HashSet<String>();
+        Set<String> wordset = new TreeSet<String>();
         if (!word.isEmpty()) {
             for (int i = 0; i < word.length(); ++i) {
                 if (i == 0) {
