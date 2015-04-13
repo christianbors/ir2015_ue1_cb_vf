@@ -10,6 +10,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class App {
@@ -18,25 +19,31 @@ public class App {
         Cli commandLine = new Cli(args);
         commandLine.parse();
         String filename = "";
-        if (commandLine.hasCaseFold()) {
+        if (commandLine.isCreateIndex()) {
+            //TODO create index new and store it in a zip-file called indexes.zip
+            System.out.println("Re-creating Index");
+        } else {
 
-        }
-        if (commandLine.hasRemoveStopwords()) {
+            if (commandLine.hasCaseFold()) {
 
-        }
-        if (commandLine.hasStemming()) {
+            }
+            if (commandLine.hasRemoveStopwords()) {
 
-        }
-        if (commandLine.hasFile()) {
-            filename = commandLine.getTopicFilename();
-        }
+            }
+            if (commandLine.hasStemming()) {
 
-        // start search with topic file
-        // The vocabulary parameter determines
-        NewsgroupTopicParser ntp = new NewsgroupTopicParser();
-        //TODO: add Topic-file to search function
-        Newsgroup ng = ntp.parse("../topics/" + filename);
-        ntp.tokenizeText(ng);
+            }
+            if (commandLine.hasFile()) {
+                filename = commandLine.getTopicFilename();
+            }
+
+            // start search with topic file
+            // The vocabulary parameter determines
+            NewsgroupTopicParser ntp = new NewsgroupTopicParser();
+            //TODO: add Topic-file to search function
+            Newsgroup ng = ntp.parse("../topics/" + filename);
+            ntp.tokenizeText(ng);
+        }
 
     }
 
@@ -65,7 +72,36 @@ public class App {
         }
     }
 
-    public static void readZip(String filename) {
-        BiGramIndex
+    public static void readZip(String zipFilename, String outputFoldername) {
+        byte[] bytes = new byte[1024];
+        try {
+            File folder = new File(outputFoldername);
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilename));
+            ZipEntry ze = zis.getNextEntry();
+
+            while(ze != null) {
+                String filename = ze.getName();
+                File newFile = new File(outputFoldername + File.separator + filename);
+
+                System.out.println("unzip file: " + newFile.getAbsolutePath());
+
+                new File(newFile.getParent()).mkdirs();
+
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while((len = zis.read(bytes)) > 0) {
+                    fos.write(bytes, 0, len);
+                }
+                ze = zis.getNextEntry();
+            }
+
+            zis.closeEntry();
+            zis.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
     }
 }

@@ -51,9 +51,9 @@ public class AppTest
         String path = "../20_newsgroups_subset/alt.atheism";
         File folder = new File(path);
         System.out.println(folder.listFiles().length);
-        for (int i = 0; i < 10; ++i) {
-            File f = folder.listFiles()[i];
-//        for (File f : folder.listFiles()) {
+//        for (int i = 0; i < 10; ++i) {
+//            File f = folder.listFiles()[i];
+        for (File f : folder.listFiles()) {
             if(f.isFile()) {
                 Newsgroup ng = ntp.parse(path + "/" + f.getName());
                 ntp.tokenizeText(ng);
@@ -63,5 +63,9 @@ public class AppTest
         BiGramIndex bg = new BiGramIndex(docs);
         BagOfWordsIndex bow = new BagOfWordsIndex(docs);
         App.zipIndex("test.zip", bg, "bigram.json", bow, "bow.json");
+    }
+
+    public void testUnzip() throws Exception {
+        App.readZip("test.zip", "test_zip");
     }
 }

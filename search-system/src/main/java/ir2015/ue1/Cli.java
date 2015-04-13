@@ -20,6 +20,8 @@ public class Cli {
     private boolean hasRemoveStopwords = false;
     private boolean hasStemming = false;
 
+    private boolean createIndex = false;
+
     private boolean bigram = false;
     private boolean bow = false;
 
@@ -75,13 +77,19 @@ public class Cli {
         Option indexingMethod = OptionBuilder.withArgName("index")
                 .hasArg()
                 .withLongOpt("index")
-                .withDescription("Available Indexing methods: Bi-Gram (bigram), Bag-of-Words (bow)")
+                .withDescription("Available Indexing methods: bigram (Bi-Gram), bow (Bag-of-Words)")
                 .create("i");
+        Option createIndex = OptionBuilder.withArgName("createIndex")
+                .hasArg()
+                .withLongOpt("create-index")
+                .withDescription("Re-generate the index. Options: bigram (Bi-Gram), bow (Bag-of-Words)")
+                .create();
         scoringMethod.setRequired(false);
         indexingMethod.setRequired(true);
         options.addOption(scoringMethod);
         options.addOption(filename);
         options.addOption(indexingMethod);
+        options.addOption(createIndex);
     }
 
     public CommandLine parse() {
@@ -91,6 +99,9 @@ public class Cli {
         try {
             cmd = parser.parse(options, args);
 
+            if (cmd.hasOption("create-index")) {
+                createIndex = true;
+            }
             if (cmd.hasOption("i")) {
                 if (cmd.getOptionValue("i").equals("bigram")) {
                     bigram = true;
@@ -165,6 +176,10 @@ public class Cli {
 
     public boolean hasFile() {
         return !topicFilename.isEmpty();
+    }
+
+    public boolean isCreateIndex() {
+        return createIndex;
     }
 
     public boolean isBigram() {
