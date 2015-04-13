@@ -62,12 +62,15 @@ public class App {
         //System.out.println(ng.toString());
         ArrayList<String> topic_ngs = ng.getNewsgroups();
         ArrayList<String> newsgroups_list = folders.getNewsgroups();
+        ArrayList<FileWrapper> fps = new ArrayList<FileWrapper>();
+
         for(int i = 0; i < topic_ngs.size(); i++)
         {
             for(int j = 0; j < newsgroups_list.size(); j++) {
                 System.out.println(topic_ngs.get(i));// + " ? " + newsgroups_list.get(j));
                 if (topic_ngs.get(i).equals(newsgroups_list.get(j))) {
                     // load them topics
+                    fps.add(folders.getFiles(topic_ngs.get(i)));
                  //   System.out.println("NG: " + topic_ngs.get(i) + " found in our DB");
                 }
             }
@@ -190,10 +193,8 @@ public class App {
                 int idx = 0;
                 if(postings_list.get(i) != 0)
                 {
-                    if(i!=91) {
                         idx = i;
                         doc_term = doc_term_keyset.get(i);
-                    }
                 }
                 // try to find out which string is associated with each non-zero entry in the postings list
                 // and compare that to the list of terms from the query
@@ -242,12 +243,12 @@ public class App {
         // TODO:  all 0.0 scored?
         // Print out sorted by name (can sort by score later)
 
-        Map<String, Double> map = new TreeMap<String, Double>(results);
-        for(Map.Entry<String, Double> entry : map.entrySet())
-        {
-            System.out.println(entry.getKey() + " : " + entry.getValue());
-        }
-        return map;
+        //Map<String, Double> map = new TreeMap<String, Double>(results);
+        //for(Map.Entry<String, Double> entry : map.entrySet())
+       // {
+         //   System.out.println(entry.getKey() + " : " + entry.getValue());
+        //}
+        return results;
 
     }
 
@@ -418,5 +419,12 @@ public class App {
     {
         double tf_idf = tf * idf;
         return tf_idf;
+    }
+
+    public static void output(Map<String, Double> map)
+    {
+        int top_100 = 100;
+
+
     }
 }
