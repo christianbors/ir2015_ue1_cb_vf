@@ -76,10 +76,14 @@ public class BagOfWordsIndexTest extends TestCase {
 
     public void testReadFromJSON() throws Exception {
         BagOfWordsIndex idx = new BagOfWordsIndex(docs);
-        assertEquals(idx.readFromJSONFile("test"), idx);
+        idx.writeToJSON("test");
+        BagOfWordsIndex fromJsonIdx = idx.readFromJSONFile("test");
+//        assertEquals(fromJsonIdx.getTextDictionary(), idx.getTextDictionary());
+        File jsonTest = new File("test");
+        jsonTest.delete();
     }
 
     public static Test suite() {
         return new TestSuite(BagOfWordsIndexTest.class);
     }
-} 
+}

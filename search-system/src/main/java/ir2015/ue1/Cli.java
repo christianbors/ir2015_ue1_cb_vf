@@ -3,6 +3,8 @@ package ir2015.ue1;
 /**
  * Created by christianbors on 21/03/15.
  */
+
+import java.io.File;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +20,13 @@ public class Cli {
     private boolean hasRemoveStopwords = false;
     private boolean hasStemming = false;
 
-    private String filename = "";
+    private boolean createIndex = false;
+
+    private boolean bigram = false;
+    private boolean bow = false;
+
+    private String topicsPath = "../topics/";
+    private String topicFilename = "";
 
     private final String caseFold = "case-fold";
     private final String removeStopwords = "remove-stopwords";
@@ -47,7 +55,7 @@ public class Cli {
                 .withDescription("Normalize vocabulary by applying a combination of " +
                         "\"case-fold\", \"remove-stopwords\", \"stemming\"")
                 .create("n");
-        Option file      = OptionBuilder.withArgName("filename")
+        Option file      = OptionBuilder.withArgName("topicFilename")
                 .hasArg()
                 .withDescription("input file for search system")
                 .withLongOpt("file")
@@ -56,27 +64,32 @@ public class Cli {
         options.addOption(file);
 */
         // Search
-        Option searchParameter = OptionBuilder.withArgName("search")
-                .hasArg()
-                .withLongOpt("search")
-                .withDescription("Search String: ")
-                .create("S");
-        options.addOption(searchParameter);
         Option scoringMethod = OptionBuilder.withArgName("vocabulary")
                 .hasArgs()
                 .withLongOpt("vocabulary")
-                .withDescription("Scoring methods: \"" + caseFold + "\", \"" + removeStopwords + "\", \"" + stemming + "\"")
+                .withDescription("Vocabulary processing methods: \"" + caseFold + "\", \"" + removeStopwords + "\", \"" + stemming + "\"")
                 .create("v");
         Option filename = OptionBuilder.withArgName("file")
                 .hasArg()
-                .withLongOpt("filename")
+                .withLongOpt("topicFilename")
                 .withDescription("Filename to provide a topic to search for")
                 .create("f");
+        Option indexingMethod = OptionBuilder.withArgName("index")
+                .hasArg()
+                .withLongOpt("index")
+                .withDescription("Available Indexing methods: bigram (Bi-Gram), bow (Bag-of-Words)")
+                .create("i");
+        Option createIndex = OptionBuilder.withArgName("createIndex")
+                .hasArg()
+                .withLongOpt("create-index")
+                .withDescription("Re-generate the index. Options: bigram (Bi-Gram), bow (Bag-of-Words)")
+                .create();
         scoringMethod.setRequired(false);
-        filename.setRequired(false);
-        searchParameter.setRequired(true);
+        indexingMethod.setRequired(true);
         options.addOption(scoringMethod);
         options.addOption(filename);
+        options.addOption(indexingMethod);
+        options.addOption(createIndex);
     }
 
     public CommandLine parse() {
@@ -86,24 +99,40 @@ public class Cli {
         try {
             cmd = parser.parse(options, args);
 
+            if (cmd.hasOption("create-index")) {
+                createIndex = true;
+            }
+            if (cmd.hasOption("i")) {
+                if (cmd.getOptionValue("i").equals("bigram")) {
+                    bigram = true;
+                } else if (cmd.getOptionValue("i").equals("bow")) {
+                    bow = true;
+                } else {
+                    throw new ParseException("No matching indexing method found");
+                }
+            } else {
+                throw new ParseException("No index method provided");
+            }
             if (cmd.hasOption("h"))
                 help();
 
-            if (!cmd.hasOption("S")) {
-                throw new ParseException("missing Search parameter!");
-            }
-
             if (cmd.hasOption("f")) {
-                filename = cmd.getOptionValue("f");
+                topicFilename = cmd.getOptionValue("f");
+                File file = new File(topicsPath + topicFilename);
+                if (!file.exists()) {
+                    System.out.println(file.getAbsolutePath());
+                    System.out.println("File not found: " + topicFilename);
+                    System.exit(0);
+                }
             }
 
             if (cmd.hasOption("v")) {
                 // Whatever you want to do with the setting goes here
                 log.log(Level.INFO, "Using cli argument -v= " + cmd.getOptionValue("v"));
                 StringTokenizer tokenizer = new StringTokenizer(cmd.getOptionValue("v"), ",");
-                while(tokenizer.hasMoreTokens()) {
+                while (tokenizer.hasMoreTokens()) {
                     String option = tokenizer.nextToken();
-                    if(option.equals(caseFold)) {
+                    if (option.equals(caseFold)) {
                         hasCaseFold = true;
                     } else if (option.equals(removeStopwords)) {
                         hasRemoveStopwords = true;
@@ -116,7 +145,7 @@ public class Cli {
             } else {
 //                log.log(Level.SEVERE, "Missing v option");
 //                help();
-                log.log(Level.INFO, "no vocabulary option submitted");
+//                log.log(Level.WARNING, "no vocabulary option submitted");
             }
         } catch (ParseException e) {
             log.log(Level.SEVERE, "Failed to parse command line properties", e);
@@ -146,11 +175,23 @@ public class Cli {
     }
 
     public boolean hasFile() {
-        return !filename.isEmpty();
+        return !topicFilename.isEmpty();
     }
 
-    public String getFilename() {
-        return filename;
+    public boolean isCreateIndex() {
+        return createIndex;
+    }
+
+    public boolean isBigram() {
+        return bigram;
+    }
+
+    public boolean isBow() {
+        return bow;
+    }
+
+    public String getTopicFilename() {
+        return topicFilename;
     }
 }
 

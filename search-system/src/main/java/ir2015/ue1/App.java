@@ -1,18 +1,20 @@
 package ir2015.ue1;
 
 import ir2015.ue1.index.BagOfWordsIndex;
+import ir2015.ue1.index.BiGramIndex;
 import ir2015.ue1.model.FileWrapper;
 import ir2015.ue1.model.FolderLoader;
 import ir2015.ue1.model.Newsgroup;
 import ir2015.ue1.parser.NewsgroupTopicParser;
-import org.apache.commons.cli.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.cli.Options;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 
 
@@ -24,8 +26,8 @@ public class App {
         boolean removeStopWords = false;
         boolean stemming = false;
 
-        //Cli commandLine = new Cli(args);
-        //commandLine.parse();
+        Cli commandLine = new Cli(args);
+        commandLine.parse();
         String filename = "";
 
         Map<String, Newsgroup> documents = new LinkedHashMap<String, Newsgroup>();
@@ -252,93 +254,6 @@ public class App {
 
     }
 
-    // OLD WRONG CODE
-    // search document , query
-    // Computes the Score of each term in the query to the document
-    // Returns a list of results, which should be sorted later
-    // Top 100 highest scores to be returned in format:
-    // <topicid> <Q#> <documentid> <rank> <score> <run-name>
-//    public static void search_terms(BagOfWordsIndex bow_d, BagOfWordsIndex bow_t)
-//    {
-//        // stuff
-//        double tf; // term frequency
-//        double df; // document frequency
-//        double idf; // inverse document frequency
-//        double tf_idf; // term frequency inverse document frequency
-//        double score = 0.0f; // query score
-//
-//        // Save results here
-//        // FILENAME, SCORE
-//        Map<String, Double> results = new LinkedHashMap<String, Double>();
-//
-//        // dictionary / terms
-//        Map<String, Integer> d_terms = bow_d.getTextDictionary();
-//        Map<String, Integer> term_terms = bow_t.getTextDictionary();
-//
-//        // postings / frequency
-//        Map<String, List<Integer>> term_freq = bow_t.getTextPostings();
-//        Map<String, List<Integer>> d_freq = bow_d.getTextPostings();
-//
-//        // term count per doc
-//        Map<String, Integer> ttf = bow_d.getTerm_freq();
-//        //System.out.println(d_freq);
-//        // go through all terms in query
-//        int idx = 0;
-//        System.out.println("Q term " + term_terms.size());
-//        System.out.println("D term " + d_terms.values());
-//        System.out.println("T freq " + term_freq.size());
-//        System.out.println("D freq " + d_freq.size());
-//
-//        for(Map.Entry<String, Integer> entry_t : term_terms.entrySet())
-//        {
-//            // get terms
-//            String t_term = entry_t.getKey();
-//            String file_name = "";
-//            // go through all terms in document
-//
-//            for(Map.Entry<String, Integer> entry_d : d_terms.entrySet())
-//            {
-//                String d_term = entry_d.getKey();
-//                //System.out.println("t " + t_term + " d " + d_term );
-//                // check if equal
-//                if(t_term.equals(d_term)) {
-//                    // we got a term match between query and document
-//                    // get index of document term
-//                    // check in occurences the frequency
-//                    //System.out.println("Match: " + t_term + " @ " + entry_d.getValue());
-//
-//                    // number of documents that contain the term we found a match for
-//                    df = getDocumentFrequency(entry_d.getValue(), d_freq);
-//                    // inverse document frequency
-//                    idf = getIdf(df, d_freq.size());
-//                    // term frequency
-//                    tf = getTf(d_freq, entry_d.getValue(), ttf);
-//                    // compute tfidf = tf * idf
-//                    tf_idf = getTfIdf(tf, idf);
-//                    score += tf_idf;
-//                }
-//                // score here
-//                // score(query, document) = sum ( tf_idf(term, doc) ) over all terms in query
-//            }
-//            // How to resolve filename?
-//            //System.out.println(score);
-//            // get file name?
-//            List<String> keys = new ArrayList(d_freq.keySet());
-//            for(int i = 0; i < keys.size(); i++)
-//            {
-//                if(i == idx) {
-//                    file_name = keys.get(i);
-//                    break;
-//                }
-//            }
-//            results.put(file_name, score);
-//            idx++;
-//            score = 0.0f;
-//        }
-//        //System.out.println(results.toString());
-//        System.out.println(results.size());
-//    }
-
     // Compute the Document Frequency
     public static double getDocumentFrequency(Integer idx, Map<String, List<Integer>> doc)
     {
@@ -367,39 +282,6 @@ public class App {
         return idf;
     }
 
-    // OLD WRONG CODE
-    // Compute the Term Frequency
-//    public static double getTf(Map<String, List<Integer>> doc, Integer idx)
-//    {
-//        double tf = 0.0f;
-//        double num_terms = 0.0f;
-//        for(Map.Entry<String, List<Integer>> entry : doc.entrySet())
-//        {
-//            String file_name = entry.getKey();
-//
-//            //get total number of terms in doc from ttf
-//            num_terms = ttf.get(file_name);
-//            List<Integer> posting = entry.getValue();
-//            if(posting.get(idx) != 0)
-//            {
-//                tf = tf + 1;
-//            }
-//        }
-//        if(num_terms == 0)
-//        {
-//            System.out.println("DIV BY 0");
-//        }
-//        try {
-//            tf = tf / num_terms;
-//        }
-//        catch(ArithmeticException e)
-//        {
-//            // probably div by 0 => NaN result
-//        }
-//
-//        return tf;
-//    }
-
     // Compute the Term Frequency
     public static double getTf(ArrayList<Integer> postings, Integer idx)
     {
@@ -427,4 +309,63 @@ public class App {
 
 
     }
+
+    public static void zipIndex(String filename, BiGramIndex bgIdx, String bigramFilename, BagOfWordsIndex bowIdx, String bowFilename) {
+        try {
+            FileOutputStream fos = new FileOutputStream(filename);
+            ZipOutputStream zos = new ZipOutputStream(fos);
+            bgIdx.writeToJSON(bigramFilename);
+            bowIdx.writeToJSON(bowFilename);
+            for (String entry : new String[]{bigramFilename, bowFilename}) {
+                File file = new File(entry);
+                FileInputStream stream = new FileInputStream(file);
+                ZipEntry zipEntry = new ZipEntry(entry);
+                zos.putNextEntry(zipEntry);
+
+                byte[] bytes = new byte[1024];
+                int length;
+                while ((length = stream.read(bytes)) >= 0) {
+                    zos.write(bytes, 0, length);
+                }
+                stream.close();
+            }
+            zos.closeEntry();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    public static void readZip(String zipFilename, String outputFoldername) {
+        byte[] bytes = new byte[1024];
+        try {
+            File folder = new File(outputFoldername);
+            if (!folder.exists()) {
+                folder.mkdir();
+            }
+            ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilename));
+            ZipEntry ze = zis.getNextEntry();
+
+            while (ze != null) {
+                String filename = ze.getName();
+                File newFile = new File(outputFoldername + File.separator + filename);
+
+                System.out.println("unzip file: " + newFile.getAbsolutePath());
+
+                new File(newFile.getParent()).mkdirs();
+
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(bytes)) > 0) {
+                    fos.write(bytes, 0, len);
+                }
+                ze = zis.getNextEntry();
+            }
+
+            zis.closeEntry();
+            zis.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
 }

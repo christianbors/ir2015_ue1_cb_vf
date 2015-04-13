@@ -40,6 +40,7 @@ return new TestSuite(NewsgroupTest.class);
         String ngJson = ng.toJson();
 
         Newsgroup ngFromJson = new Gson().fromJson(ngJson, Newsgroup.class);
-        assertEquals(ng, ngFromJson);
+        assertEquals(ng.getArticleid(), ngFromJson.getArticleid());
+        assertEquals(ng.getText(), ngFromJson.getText());
     }
 }

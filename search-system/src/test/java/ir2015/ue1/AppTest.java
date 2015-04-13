@@ -1,8 +1,16 @@
 package ir2015.ue1;
 
+import ir2015.ue1.index.BagOfWordsIndex;
+import ir2015.ue1.index.BiGramIndex;
+import ir2015.ue1.model.Newsgroup;
+import ir2015.ue1.parser.NewsgroupTopicParser;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Unit test for simple App.
@@ -10,6 +18,7 @@ import junit.framework.TestSuite;
 public class AppTest 
     extends TestCase
 {
+    private Map<String, Newsgroup> docs;
     /**
      * Create the test case
      *
@@ -34,5 +43,29 @@ public class AppTest
     public void testApp()
     {
         assertTrue( true );
+    }
+
+    public void testZip() throws Exception {
+        docs = new HashMap<String, Newsgroup>();
+        NewsgroupTopicParser ntp = new NewsgroupTopicParser();
+        String path = "../20_newsgroups_subset/alt.atheism";
+        File folder = new File(path);
+        System.out.println(folder.listFiles().length);
+//        for (int i = 0; i < 10; ++i) {
+//            File f = folder.listFiles()[i];
+        for (File f : folder.listFiles()) {
+            if(f.isFile()) {
+                Newsgroup ng = ntp.parse(path + "/" + f.getName());
+                ntp.tokenizeText(ng);
+                docs.put(f.getName(), ng);
+            }
+        }
+        BiGramIndex bg = new BiGramIndex(docs);
+        BagOfWordsIndex bow = new BagOfWordsIndex(docs);
+        App.zipIndex("test.zip", bg, "bigram.json", bow, "bow.json");
+    }
+
+    public void testUnzip() throws Exception {
+        App.readZip("test.zip", "test_zip");
     }
 }
