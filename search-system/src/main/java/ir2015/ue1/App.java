@@ -30,17 +30,17 @@ public class App {
 
         Map<String, Newsgroup> documents = new LinkedHashMap<String, Newsgroup>();
 
-       // if (commandLine.hasCaseFold()) {
-            caseFold = true;
+        // if (commandLine.hasCaseFold()) {
+        caseFold = true;
         //}
         //if (commandLine.hasRemoveStopwords()) {
-            removeStopWords = true;
+        removeStopWords = true;
         //}
         //if (commandLine.hasStemming()) {
-            stemming = true;
+        stemming = true;
         //}
         //if (commandLine.hasFile()) {
-            //filename = commandLine.getFilename();
+        //filename = commandLine.getFilename();
         //}
         NewsgroupTopicParser ntp = new NewsgroupTopicParser(caseFold, removeStopWords, stemming);
         // The vocabulary parameter determine
@@ -51,11 +51,32 @@ public class App {
             Newsgroup ng = ntp.parse("topics/" + filename);
             ntp.tokenizeText(ng);
         }
+        // load topic file parse & tokenize
+        // find out which newsgroups topic is linked to ( be careful newsgroups might not exist)
+        // load ONLY RELEVANT newsgroups BoW/Bi-Gram IDX or construct on the fly
+        // Return top 100 results in format <topicid> <Q#> <documentid> <rank> <score> <run-name>
+        FolderLoader folders = new FolderLoader("newsgroups/");
+        FileWrapper atheism = folders.getFiles("alt.atheism");
+        Newsgroup ng = ntp.parse("topics/topic7");
+        ntp.tokenizeText(ng);
+        //System.out.println(ng.toString());
+        ArrayList<String> topic_ngs = ng.getNewsgroups();
+        ArrayList<String> newsgroups_list = folders.getNewsgroups();
+        for(int i = 0; i < topic_ngs.size(); i++)
+        {
+            for(int j = 0; j < newsgroups_list.size(); j++) {
+                System.out.println(topic_ngs.get(i));// + " ? " + newsgroups_list.get(j));
+                if (topic_ngs.get(i).equals(newsgroups_list.get(j))) {
+                    // load them topics
+                 //   System.out.println("NG: " + topic_ngs.get(i) + " found in our DB");
+                }
+            }
+        }
 
         // Load all newsgroups + parse + tokenize
         // Whole result is in ArrayList<Newsgroup> documents
-        FolderLoader folders = new FolderLoader("newsgroups/");
-        FileWrapper atheism = folders.getFiles("alt.atheism");
+
+
 //        FileWrapper graphics = folders.getFiles("comp.graphics");
 //        FileWrapper windows = folders.getFiles("comp.os.ms-windows.misc");
 //        FileWrapper ibm_hardware = folders.getFiles("comp.sys.ibm.pc.hardware");
@@ -105,8 +126,7 @@ public class App {
         //System.out.println(bow.getTextOccurrences().toString());
 
 
-        Newsgroup ng = ntp.parse("topics/topic8");
-        ntp.tokenizeText(ng);
+
 
 
 
@@ -136,13 +156,13 @@ public class App {
     // Returns a list of results, which should be sorted later
     // Top 100 highest scores to be returned in format:
     // <topicid> <Q#> <documentid> <rank> <score> <run-name>
-    public static void score(BagOfWordsIndex doc, ArrayList<String> query)
+    public static Map<String, Double> score(BagOfWordsIndex doc, ArrayList<String> query)
     {
         double df = 0.0f;
         double tf = 0.0f;
         double idf = 0.0f;
         double tf_idf = 0.0f;
-        double score = 0.0f;
+
 
         Map<String, Double> results = new HashMap<String, Double>();
 
@@ -156,6 +176,7 @@ public class App {
         // go through all documents in set
         for(Map.Entry<String, List<Integer>> entry : doc_postings.entrySet())
         {
+            double score = 0.0f;
             file_name = entry.getKey();
             ArrayList<Integer> postings_list = new ArrayList(entry.getValue());
 
@@ -163,59 +184,54 @@ public class App {
             for(int i = 0; i < postings_list.size(); i++)
             {
                 String doc_term = "";
+
+                // if postings list @ index i != 0
+                // the term occurs in the document so we get that term
                 int idx = 0;
                 if(postings_list.get(i) != 0)
                 {
                     if(i!=91) {
+                        idx = i;
                         doc_term = doc_term_keyset.get(i);
                     }
                 }
                 // try to find out which string is associated with each non-zero entry in the postings list
                 // and compare that to the list of terms from the query
-               // for(int k = 0; k < doc_term_keyset.size(); k++)
-                //{
-                    // if entry @ postings list for this doc is not null
-                    // the string is present in the documents terms
-                    // get that doc term and start comparing to the query terms
-                    // save the index of this term
-                  //  if(postings_list.get(k) != 0)
-                    //{
-                      //  idx = k;
-                        //System.out.println(k);
-                        // Only Throws NPE @ Index 91
-                        // For some reason in postings file @ index 91 there is nothing
-                        // @ BOW Construction
-                        //if(k != 91) {
-                          //  doc_term = doc_term_keyset.get(k);
-                        //}
-                        // Throws NPE ?
+                // if entry @ postings list for this doc is not null
+                // the string is present in the documents terms
+                // get that doc term and start comparing to the query terms
+                // save the index of this term
+                // Only Throws NPE @ Index 91
+                // For some reason in postings file @ index 91 there is nothing
+                // @ BOW Construction
+                // go through each term in query
+                // start comparing once we have a match
+                // compute TF / DF / IDF / TF-IDF of the match
+                // add to score
+                for(int j = 0; j < query.size(); j++)
+                {
+                    String query_term = query.get(j);
 
-                        // go through each term in query
-                        // start comparing once we have a match
-                        // compute TF / DF / IDF / TF-IDF of the match
-                        // add to score
-                        for(int j = 0; j < query.size(); j++)
-                        {
-                            String query_term = query.get(j);
+                    // term match
+                    if(doc_term.equals(query_term))
+                    {
+                        //System.out.println("TERM MATCH");
+                        //System.out.println("DOC: " + file_name + " D:" + doc_term + " T:" + query_term);
 
-                            // term match
-                            if(doc_term.equals(query_term))
-                            {
-                                //System.out.println("TERM MATCH");
-                                //System.out.println("DOC: " + file_name + " D:" + doc_term + " T:" + query_term);
-
-                                // send document idx + postings file to compute DF
-                                df = getDocumentFrequency(idx, doc_postings);
-                                // send DF + number of documents to compute IDF
-                                idf = getIdf(df, doc_postings.size());
-                                // send postings list + idx of term we are checking
-                                tf = getTf(postings_list, idx);
-                                // compute tf_idf as tf * idf
-                                tf_idf = getTfIdf(tf, idf);
-                                // add up score
-                                score += tf_idf;
-                          //  }
-                        //}
+                        // send document idx + postings file to compute DF
+                        df = getDocumentFrequency(idx, doc_postings);
+                        //System.out.println("DF: " + df);
+                        // send DF + number of documents to compute I
+                        idf = getIdf(df, doc_postings.size());
+                        //System.out.println("IDF: " + idf);
+                        // send postings list + idx of term we are checking
+                        tf = getTf(postings_list, idx);
+                        //System.out.println("TF: " + tf);
+                        // compute tf_idf as tf * idf
+                        tf_idf = getTfIdf(tf, idf);
+                        //System.out.println("TF-IDF: " + tf_idf);
+                        // add up score
+                        score += tf_idf;
                     }
                 }
             }
@@ -231,6 +247,7 @@ public class App {
         {
             System.out.println(entry.getKey() + " : " + entry.getValue());
         }
+        return map;
 
     }
 
@@ -385,19 +402,21 @@ public class App {
     // Compute the Term Frequency
     public static double getTf(ArrayList<Integer> postings, Integer idx)
     {
-        int num_terms = 0;
-        int term_freq = postings.get(idx);
+        double num_terms = 0;
+        double term_freq = (double) postings.get(idx);
         for(int i = 0; i < postings.size(); i++)
         {
             if(postings.get(i) != 0) {
-                num_terms++;
+                num_terms = num_terms + 1;
             }
         }
-        return term_freq/num_terms;
+        double tf = term_freq / num_terms;
+        return tf;
     }
     // Compute TF-IDF for the term, document
     public static double getTfIdf(double tf, double idf)
     {
-        return tf * idf;
+        double tf_idf = tf * idf;
+        return tf_idf;
     }
 }

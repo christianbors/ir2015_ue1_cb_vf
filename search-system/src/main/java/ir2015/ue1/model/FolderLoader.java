@@ -46,4 +46,16 @@ public class FolderLoader {
 
         return new FileWrapper(root + f.getName(), res);
     }
+
+    public ArrayList<String> getNewsgroups()
+    {
+        ArrayList<String> res = new ArrayList<String>();
+        for(int i = 0; i < newsgroup.size(); i++)
+        {
+            res.add(newsgroup.get(i).getName());
+            System.out.println(newsgroup.get(i).getName());
+        }
+
+        return res;
+    }
 }
