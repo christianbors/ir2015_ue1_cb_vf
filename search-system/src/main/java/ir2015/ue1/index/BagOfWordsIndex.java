@@ -173,7 +173,7 @@ public class BagOfWordsIndex {
     public void writeToJSON(String filename) {
         FileWriter jsonFileWriter = null;
         try {
-            jsonFileWriter = new FileWriter(filename + "_bow.json");
+            jsonFileWriter = new FileWriter(filename);
             jsonFileWriter.write(new Gson().toJson(this));
             jsonFileWriter.flush();
             jsonFileWriter.close();

@@ -26,6 +26,7 @@ public class BiGramIndexTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         docs = new HashMap<String, Newsgroup>();
+        NewsgroupTopicParser ntp = new NewsgroupTopicParser();
         String path = "../20_newsgroups_subset/alt.atheism";
         File folder = new File(path);
         System.out.println(folder.listFiles().length);
@@ -33,13 +34,20 @@ public class BiGramIndexTest extends TestCase {
             File f = folder.listFiles()[i];
 //        for (File f : folder.listFiles()) {
             if(f.isFile()) {
-                docs.put(f.getName(), new NewsgroupTopicParser().parse(path + "/" + f.getName()));
+                Newsgroup ng = ntp.parse(path + "/" + f.getName());
+                ntp.tokenizeText(ng);
+                docs.put(f.getName(), ng);
             }
         }
     }
 
     public void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    public void testWriteToJSON() throws Exception {
+        BiGramIndex idx = new BiGramIndex(docs);
+        idx.writeToJSON("test");
     }
 
     public void testBiGramIndexInstance() throws Exception {
