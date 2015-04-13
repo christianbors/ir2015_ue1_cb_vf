@@ -1,5 +1,6 @@
 package ir2015.ue1;
 
+import com.google.gson.Gson;
 import ir2015.ue1.index.BagOfWordsIndex;
 import ir2015.ue1.index.BiGramIndex;
 import ir2015.ue1.model.FileWrapper;
@@ -7,15 +8,11 @@ import ir2015.ue1.model.FolderLoader;
 import ir2015.ue1.model.Newsgroup;
 import ir2015.ue1.parser.NewsgroupTopicParser;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 
 
 public class App {
@@ -26,8 +23,42 @@ public class App {
         boolean removeStopWords = false;
         boolean stemming = false;
 
+        Experiments experiments = new Experiments(new HashMap<>());
+        String experimentsDoc = "experiments.json";
+        File exDocFile = new File(experimentsDoc);
+        try {
+            if (!exDocFile.exists()) {
+                exDocFile.createNewFile();
+            } else {
+                FileReader experimentsReader = new FileReader(experimentsDoc);
+                experiments = new Gson().fromJson(experimentsReader, Experiments.class);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Cli commandLine = new Cli(args);
         commandLine.parse();
+
+        Experiment experiment = new Experiment(commandLine.hasStemming(),
+                commandLine.hasCaseFold(),
+                commandLine.hasRemoveStopwords(),
+                commandLine.isBigram());
+        String experimentName = experiments.contains(experiment);
+        if (experimentName.isEmpty()) {
+            experiments.add(experiment);
+        }
+
+        FileWriter jsonFileWriter = null;
+        try {
+            jsonFileWriter = new FileWriter(experimentsDoc);
+            jsonFileWriter.write(new Gson().toJson(experiments));
+            jsonFileWriter.flush();
+            jsonFileWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         String filename = "";
 //<<<<<<< HEAD
 //        if (commandLine.isCreateIndex()) {
@@ -86,13 +117,12 @@ public class App {
         //System.out.println(ng.toString());
         ArrayList<String> topic_ngs = ng.getNewsgroups();
         ArrayList<String> newsgroups_list = folders.getNewsgroups();
-        for(int i = 0; i < topic_ngs.size(); i++)
-        {
-            for(int j = 0; j < newsgroups_list.size(); j++) {
+        for (int i = 0; i < topic_ngs.size(); i++) {
+            for (int j = 0; j < newsgroups_list.size(); j++) {
                 System.out.println(topic_ngs.get(i));// + " ? " + newsgroups_list.get(j));
                 if (topic_ngs.get(i).equals(newsgroups_list.get(j))) {
                     // load them topics
-                 //   System.out.println("NG: " + topic_ngs.get(i) + " found in our DB");
+                    //   System.out.println("NG: " + topic_ngs.get(i) + " found in our DB");
                 }
             }
         }
@@ -122,7 +152,7 @@ public class App {
 //        FileWrapper religion_misc = folders.getFiles("talk.religion.misc");
 //        //System.out.println(atheism.toString());
         // Parse all files
-        parse_files_list(atheism ,ntp, documents);
+        parse_files_list(atheism, ntp, documents);
 //        parse_files_list(graphics ,ntp, documents);
 //        parse_files_list(windows ,ntp, documents);
 //        parse_files_list(ibm_hardware ,ntp, documents);
@@ -150,10 +180,6 @@ public class App {
         //System.out.println(bow.getTextOccurrences().toString());
 
 
-
-
-
-
         //System.out.println(bow_topic.getTextDictionary());
         //System.out.println(bow_topic.getTextOccurrences().toString());
 
@@ -163,15 +189,13 @@ public class App {
 
     // Parse all files in Newsgroup directories
     // Put them in the document map to construct the BoW/Bi-Gram indexes later
-    public static void parse_files_list(FileWrapper f, NewsgroupTopicParser ntp, Map<String, Newsgroup> documents)
-    {
+    public static void parse_files_list(FileWrapper f, NewsgroupTopicParser ntp, Map<String, Newsgroup> documents) {
         System.out.println("Loading & parsing: " + f.getName());
-        for(int i = 0; i < f.getFiles().size(); i++)
-        {
+        for (int i = 0; i < f.getFiles().size(); i++) {
             //System.out.println(f.getName() + "/" + f.getFiles().get(i).getName());
             Newsgroup ng = ntp.parse(f.getName() + "/" + f.getFiles().get(i).getName());
             ntp.tokenizeText(ng);
-            documents.put(f.getName() + "/" + f.getFiles().get(i).getName(),ng);
+            documents.put(f.getName() + "/" + f.getFiles().get(i).getName(), ng);
         }
     }
 
@@ -180,8 +204,7 @@ public class App {
     // Returns a list of results, which should be sorted later
     // Top 100 highest scores to be returned in format:
     // <topicid> <Q#> <documentid> <rank> <score> <run-name>
-    public static Map<String, Double> score(BagOfWordsIndex doc, ArrayList<String> query)
-    {
+    public static Map<String, Double> score(BagOfWordsIndex doc, ArrayList<String> query) {
         double df = 0.0f;
         double tf = 0.0f;
         double idf = 0.0f;
@@ -198,23 +221,20 @@ public class App {
         ArrayList<String> doc_term_keyset = new ArrayList(doc_terms.keySet());
         String file_name = "";
         // go through all documents in set
-        for(Map.Entry<String, List<Integer>> entry : doc_postings.entrySet())
-        {
+        for (Map.Entry<String, List<Integer>> entry : doc_postings.entrySet()) {
             double score = 0.0f;
             file_name = entry.getKey();
             ArrayList<Integer> postings_list = new ArrayList(entry.getValue());
 
             // get the postings list for each document
-            for(int i = 0; i < postings_list.size(); i++)
-            {
+            for (int i = 0; i < postings_list.size(); i++) {
                 String doc_term = "";
 
                 // if postings list @ index i != 0
                 // the term occurs in the document so we get that term
                 int idx = 0;
-                if(postings_list.get(i) != 0)
-                {
-                    if(i!=91) {
+                if (postings_list.get(i) != 0) {
+                    if (i != 91) {
                         idx = i;
                         doc_term = doc_term_keyset.get(i);
                     }
@@ -232,13 +252,11 @@ public class App {
                 // start comparing once we have a match
                 // compute TF / DF / IDF / TF-IDF of the match
                 // add to score
-                for(int j = 0; j < query.size(); j++)
-                {
+                for (int j = 0; j < query.size(); j++) {
                     String query_term = query.get(j);
 
                     // term match
-                    if(doc_term.equals(query_term))
-                    {
+                    if (doc_term.equals(query_term)) {
                         //System.out.println("TERM MATCH");
                         //System.out.println("DOC: " + file_name + " D:" + doc_term + " T:" + query_term);
 
@@ -267,24 +285,21 @@ public class App {
         // Print out sorted by name (can sort by score later)
 
         Map<String, Double> map = new TreeMap<String, Double>(results);
-        for(Map.Entry<String, Double> entry : map.entrySet())
-        {
+        for (Map.Entry<String, Double> entry : map.entrySet()) {
             System.out.println(entry.getKey() + " : " + entry.getValue());
         }
         return map;
 
     }
 
+
     // Compute the Document Frequency
-    public static double getDocumentFrequency(Integer idx, Map<String, List<Integer>> doc)
-    {
+    public static double getDocumentFrequency(Integer idx, Map<String, List<Integer>> doc) {
         // returns the number of documents that contain the term
         double df = 0.0f;
-        for(Map.Entry<String, List<Integer>> entry : doc.entrySet())
-        {
+        for (Map.Entry<String, List<Integer>> entry : doc.entrySet()) {
             List<Integer> posting = entry.getValue();
-            if(posting.get(idx) != 0)
-            {
+            if (posting.get(idx) != 0) {
                 df = df + 1;
             }
         }
@@ -292,9 +307,22 @@ public class App {
         return df;
     }
 
+    public static double getDocumentFrequency(String document, Map<String, Set<BiGramIndex.Posting>> postings) {
+        double df = 0.0f;
+        for (Map.Entry<String, Set<BiGramIndex.Posting>> entry : postings.entrySet()) {
+            Set<BiGramIndex.Posting> posting = entry.getValue();
+            int count = 0;
+            for (BiGramIndex.Posting post : posting) {
+                if (post.getDoc().equals(document)) {
+                    ++count;
+                }
+            }
+        }
+        return df;
+    }
+
     // Compute the Inverse Document Frequency
-    public static double getIdf(double df, int num_doc)
-    {
+    public static double getIdf(double df, int num_doc) {
         // simple math stuff
         double idf = 0.0f;
         double x = num_doc / df;
@@ -304,22 +332,20 @@ public class App {
     }
 
     // Compute the Term Frequency
-    public static double getTf(ArrayList<Integer> postings, Integer idx)
-    {
+    public static double getTf(ArrayList<Integer> postings, Integer idx) {
         double num_terms = 0;
         double term_freq = (double) postings.get(idx);
-        for(int i = 0; i < postings.size(); i++)
-        {
-            if(postings.get(i) != 0) {
+        for (int i = 0; i < postings.size(); i++) {
+            if (postings.get(i) != 0) {
                 num_terms = num_terms + 1;
             }
         }
         double tf = term_freq / num_terms;
         return tf;
     }
+
     // Compute TF-IDF for the term, document
-    public static double getTfIdf(double tf, double idf)
-    {
+    public static double getTfIdf(double tf, double idf) {
         double tf_idf = tf * idf;
         return tf_idf;
     }
