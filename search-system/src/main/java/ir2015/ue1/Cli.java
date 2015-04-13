@@ -3,6 +3,7 @@ package ir2015.ue1;
 /**
  * Created by christianbors on 21/03/15.
  */
+
 import java.io.File;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -18,6 +19,9 @@ public class Cli {
     private boolean hasCaseFold = false;
     private boolean hasRemoveStopwords = false;
     private boolean hasStemming = false;
+
+    private boolean bigram = false;
+    private boolean bow = false;
 
     private String topicsPath = "../topics/";
     private String topicFilename = "";
@@ -61,16 +65,23 @@ public class Cli {
         Option scoringMethod = OptionBuilder.withArgName("vocabulary")
                 .hasArgs()
                 .withLongOpt("vocabulary")
-                .withDescription("Scoring methods: \"" + caseFold + "\", \"" + removeStopwords + "\", \"" + stemming + "\"")
+                .withDescription("Vocabulary processing methods: \"" + caseFold + "\", \"" + removeStopwords + "\", \"" + stemming + "\"")
                 .create("v");
         Option filename = OptionBuilder.withArgName("file")
                 .hasArg()
                 .withLongOpt("topicFilename")
                 .withDescription("Filename to provide a topic to search for")
                 .create("f");
+        Option indexingMethod = OptionBuilder.withArgName("index")
+                .hasArg()
+                .withLongOpt("index")
+                .withDescription("Available Indexing methods: Bi-Gram (bigram), Bag-of-Words (bow)")
+                .create("i");
         scoringMethod.setRequired(false);
+        indexingMethod.setRequired(true);
         options.addOption(scoringMethod);
         options.addOption(filename);
+        options.addOption(indexingMethod);
     }
 
     public CommandLine parse() {
@@ -80,6 +91,17 @@ public class Cli {
         try {
             cmd = parser.parse(options, args);
 
+            if (cmd.hasOption("i")) {
+                if (cmd.getOptionValue("i").equals("bigram")) {
+                    bigram = true;
+                } else if (cmd.getOptionValue("i").equals("bow")) {
+                    bow = true;
+                } else {
+                    throw new ParseException("No matching indexing method found");
+                }
+            } else {
+                throw new ParseException("No index method provided");
+            }
             if (cmd.hasOption("h"))
                 help();
 
@@ -97,9 +119,9 @@ public class Cli {
                 // Whatever you want to do with the setting goes here
                 log.log(Level.INFO, "Using cli argument -v= " + cmd.getOptionValue("v"));
                 StringTokenizer tokenizer = new StringTokenizer(cmd.getOptionValue("v"), ",");
-                while(tokenizer.hasMoreTokens()) {
+                while (tokenizer.hasMoreTokens()) {
                     String option = tokenizer.nextToken();
-                    if(option.equals(caseFold)) {
+                    if (option.equals(caseFold)) {
                         hasCaseFold = true;
                     } else if (option.equals(removeStopwords)) {
                         hasRemoveStopwords = true;
@@ -143,6 +165,14 @@ public class Cli {
 
     public boolean hasFile() {
         return !topicFilename.isEmpty();
+    }
+
+    public boolean isBigram() {
+        return bigram;
+    }
+
+    public boolean isBow() {
+        return bow;
     }
 
     public String getTopicFilename() {
