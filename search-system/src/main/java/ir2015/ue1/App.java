@@ -7,6 +7,7 @@ import ir2015.ue1.model.FileWrapper;
 import ir2015.ue1.model.FolderLoader;
 import ir2015.ue1.model.Newsgroup;
 import ir2015.ue1.parser.NewsgroupTopicParser;
+import javafx.geometry.Pos;
 
 import java.io.*;
 import java.util.*;
@@ -60,35 +61,7 @@ public class App {
         }
 
         String filename = "";
-//<<<<<<< HEAD
-//        if (commandLine.isCreateIndex()) {
-//            //TODO create index new and store it in a zip-file called indexes.zip
-//            System.out.println("Re-creating Index");
-//        } else {
-//
-//            if (commandLine.hasCaseFold()) {
-//
-//            }
-//            if (commandLine.hasRemoveStopwords()) {
-//
-//            }
-//            if (commandLine.hasStemming()) {
-////=======
-////>>>>>>> f3f8e6fbbef3c13ec9aea5dcc0d4313065294eb8
-//
-//            }
-//            if (commandLine.hasFile()) {
-//                filename = commandLine.getTopicFilename();
-//            }
-//
-//            // start search with topic file
-//            // The vocabulary parameter determines
-//            NewsgroupTopicParser ntp = new NewsgroupTopicParser();
-//            //TODO: add Topic-file to search function
-//            Newsgroup ng = ntp.parse("../topics/" + filename);
-//            ntp.tokenizeText(ng);
-//        }
-
+        
         Map<String, Newsgroup> documents = new LinkedHashMap<String, Newsgroup>();
 
         // if (commandLine.hasCaseFold()) {
@@ -106,96 +79,74 @@ public class App {
         NewsgroupTopicParser ntp = new NewsgroupTopicParser(caseFold, removeStopWords, stemming);
         // The vocabulary parameter determine
 
+        // start search with topic file
+        Newsgroup ng = ntp.parse("topics/topic8");
+        ntp.tokenizeText(ng);
+        //if (!filename.isEmpty()) {
+            //TODO: add Topic-file to search function
+          //  ng = ntp.parse("topics/topic8");
+            //ntp.tokenizeText(ng);
+        //}
+        //else
+        //{
+          //  ng = new Newsgroup();
+        //}
         // load topic file parse & tokenize
         // find out which newsgroups topic is linked to ( be careful newsgroups might not exist)
         // load ONLY RELEVANT newsgroups BoW/Bi-Gram IDX or construct on the fly
         // Return top 100 results in format <topicid> <Q#> <documentid> <rank> <score> <run-name>
         FolderLoader folders = new FolderLoader("newsgroups/");
-        FileWrapper atheism = folders.getFiles("alt.atheism");
-        Newsgroup ng = ntp.parse("topics/topic7");
-        ntp.tokenizeText(ng);
+
+
         //System.out.println(ng.toString());
+       // System.out.println(ng.getNewsgroups().toString());
         ArrayList<String> topic_ngs = ng.getNewsgroups();
         ArrayList<String> newsgroups_list = folders.getNewsgroups();
-        for (int i = 0; i < topic_ngs.size(); i++) {
-            for (int j = 0; j < newsgroups_list.size(); j++) {
-                System.out.println(topic_ngs.get(i));// + " ? " + newsgroups_list.get(j));
+        ArrayList<FileWrapper> fps = new ArrayList<FileWrapper>();
+
+        for(int i = 0; i < topic_ngs.size(); i++)
+        {
+            //System.out.println("T: " + topic_ngs.get(i));
+            for(int j = 0; j < newsgroups_list.size(); j++) {
                 if (topic_ngs.get(i).equals(newsgroups_list.get(j))) {
                     // load them topics
-                    //   System.out.println("NG: " + topic_ngs.get(i) + " found in our DB");
+                    fps.add(folders.getFiles(topic_ngs.get(i)));
+                    //System.out.println("NG: " + topic_ngs.get(i) + " found in our DB");
                 }
             }
         }
+        parse_files_list(fps ,ntp, documents);
 
-        // Load all newsgroups + parse + tokenize
-        // Whole result is in ArrayList<Newsgroup> documents
-
-
-//        FileWrapper graphics = folders.getFiles("comp.graphics");
-//        FileWrapper windows = folders.getFiles("comp.os.ms-windows.misc");
-//        FileWrapper ibm_hardware = folders.getFiles("comp.sys.ibm.pc.hardware");
-//        FileWrapper mac_hardware = folders.getFiles("comp.sys.mac.hardware");
-//        FileWrapper windows_x = folders.getFiles("comp.windows.x");
-//        FileWrapper forsale = folders.getFiles("misc.forsale");
-//        FileWrapper autos = folders.getFiles("rec.autos");
-//        FileWrapper motorcycles = folders.getFiles("rec.motorcycles");
-//        FileWrapper baseball = folders.getFiles("rec.sport.baseball");
-//        FileWrapper hockey = folders.getFiles("rec.sport.hockey");
-//        FileWrapper crypt = folders.getFiles("sci.crypt");
-//        FileWrapper electronics = folders.getFiles("sci.electronics");
-//        FileWrapper med = folders.getFiles("sci.med");
-//        FileWrapper space = folders.getFiles("sci.space");
-//        FileWrapper christian = folders.getFiles("soc.religion.christian");
-//        FileWrapper guns = folders.getFiles("talk.politics.guns");
-//        FileWrapper mideast = folders.getFiles("talk.politics.mideast");
-//        FileWrapper misc = folders.getFiles("talk.politics.misc");
-//        FileWrapper religion_misc = folders.getFiles("talk.religion.misc");
-//        //System.out.println(atheism.toString());
-        // Parse all files
-        parse_files_list(atheism, ntp, documents);
-//        parse_files_list(graphics ,ntp, documents);
-//        parse_files_list(windows ,ntp, documents);
-//        parse_files_list(ibm_hardware ,ntp, documents);
-//        parse_files_list(mac_hardware ,ntp, documents);
-//        parse_files_list(windows_x ,ntp, documents);
-//        parse_files_list(forsale ,ntp, documents);
-//        parse_files_list(autos ,ntp, documents);
-//        parse_files_list(motorcycles ,ntp, documents);
-//        parse_files_list(baseball ,ntp, documents);
-//        parse_files_list(hockey ,ntp, documents);
-//        parse_files_list(crypt ,ntp, documents);
-//        parse_files_list(electronics ,ntp, documents);
-//        parse_files_list(med ,ntp, documents);
-//        parse_files_list(space ,ntp, documents);
-//        parse_files_list(christian ,ntp, documents);
-//        parse_files_list(guns ,ntp, documents);
-//        parse_files_list(mideast ,ntp, documents);
-//        parse_files_list(misc ,ntp, documents);
-//        parse_files_list(religion_misc ,ntp, documents);
-
-        System.out.println("Files loaded & parsed.");
+        //System.out.println("Files loaded & parsed.");
         // Create BoW/Bigram indexes
+        Map<String, Newsgroup> query = new HashMap<String, Newsgroup>();
+        query.put(filename ,ng);
         BagOfWordsIndex bow_doc = new BagOfWordsIndex(documents);
-        //System.out.println(bow.getTextDictionary().toString());
-        //System.out.println(bow.getTextOccurrences().toString());
 
-
-        //System.out.println(bow_topic.getTextDictionary());
-        //System.out.println(bow_topic.getTextOccurrences().toString());
-
-        score(bow_doc, ng.getTokens());
-        System.out.println("Done.");
+        BiGramIndex bgi_doc = new BiGramIndex(documents);
+        BiGramIndex bgi_query = new BiGramIndex(query);
+        //System.out.println(ng.getTokens().toString());
+        Map<String, Double> ranking_bow = score(bow_doc, ng.getTokens());
+        Map<String, Double> ranking_bgi = score(bgi_doc, bgi_query);
+        output(ranking_bgi, filename);
     }
 
     // Parse all files in Newsgroup directories
     // Put them in the document map to construct the BoW/Bi-Gram indexes later
-    public static void parse_files_list(FileWrapper f, NewsgroupTopicParser ntp, Map<String, Newsgroup> documents) {
-        System.out.println("Loading & parsing: " + f.getName());
-        for (int i = 0; i < f.getFiles().size(); i++) {
-            //System.out.println(f.getName() + "/" + f.getFiles().get(i).getName());
-            Newsgroup ng = ntp.parse(f.getName() + "/" + f.getFiles().get(i).getName());
-            ntp.tokenizeText(ng);
-            documents.put(f.getName() + "/" + f.getFiles().get(i).getName(), ng);
+    public static void parse_files_list(ArrayList<FileWrapper> f, NewsgroupTopicParser ntp, Map<String, Newsgroup> documents)
+    {
+        //System.out.println("Loading & parsing: " + f.getName());
+        for(int i = 0; i < f.size(); i++)
+        {
+            //System.out.println(f.get(i).getName() + " loaded.");
+            FileWrapper fw = f.get(i);
+            for (int j = 0; j < fw.getFiles().size(); j++)
+            {
+                //System.out.println(fw.getName() + "/" + fw.getFiles().get(j).getName());
+                Newsgroup ng = ntp.parse(fw.getName() + "/" + fw.getFiles().get(j).getName());
+                ntp.tokenizeText(ng);
+                documents.put(fw.getName() + "/" + fw.getFiles().get(j).getName(), ng);
+            }
         }
     }
 
@@ -233,11 +184,10 @@ public class App {
                 // if postings list @ index i != 0
                 // the term occurs in the document so we get that term
                 int idx = 0;
-                if (postings_list.get(i) != 0) {
-                    if (i != 91) {
+                if(postings_list.get(i) != 0)
+                {
                         idx = i;
                         doc_term = doc_term_keyset.get(i);
-                    }
                 }
                 // try to find out which string is associated with each non-zero entry in the postings list
                 // and compare that to the list of terms from the query
@@ -280,16 +230,95 @@ public class App {
             results.put(file_name, score);
             //System.out.print(".");
         }
-        // 400 RESULTS
-        // TODO:  all 0.0 scored?
-        // Print out sorted by name (can sort by score later)
 
-        Map<String, Double> map = new TreeMap<String, Double>(results);
-        for (Map.Entry<String, Double> entry : map.entrySet()) {
-            System.out.println(entry.getKey() + " : " + entry.getValue());
+        return results;
+
+    }
+
+    // search document , query
+    // Computes the Score of each term in the query to the document
+    // Returns a list of results, which should be sorted later
+    // Top 100 highest scores to be returned in format:
+    // <topicid> <Q#> <documentid> <rank> <score> <run-name>
+    public static Map<String, Double> score(BiGramIndex doc, BiGramIndex query)
+    {
+        double df = 0.0f;
+        double tf = 0.0f;
+        double idf = 0.0f;
+        double tf_idf = 0.0f;
+        int num_docs = doc.getDocumentSize();
+
+        Map<String, Double> results = new HashMap<String, Double>();
+        String file_name = "";
+        // docname, postings list
+
+        // bi-gram , Set<DocumentName, position>
+        Map<String, Set<BiGramIndex.Posting>> doc_postings = doc.getTextPostings();
+        Map<String ,Set<BiGramIndex.Posting>> query_postings = query.getTextPostings();
+        Map<String, Integer> term_count = new HashMap<String, Integer>();
+
+        for (Map.Entry<String, Set<BiGramIndex.Posting>> entry : doc_postings.entrySet()) {
+            Set<String> docPerm = new HashSet<String>();
+            for(BiGramIndex.Posting posting : entry.getValue()) {
+                docPerm.add(posting.getDoc());
+            }
+            for (String docName : docPerm) {
+                if(term_count.containsKey(docName)) {
+                    term_count.put(docName, term_count.get(docName) + 1);
+                } else {
+                    term_count.put(docName, 1);
+                }
+            }
         }
-        return map;
 
+        for(Map.Entry<String, Set<BiGramIndex.Posting>> entry_d : doc_postings.entrySet())
+        {
+            double score = 0.0f;
+
+            Set<BiGramIndex.Posting> postings = entry_d.getValue();
+            String bi_gram_d = entry_d.getKey();
+            int doc_freq = postings.size();
+
+            Set<String> doc_names = new HashSet<String>();
+            Map<String, Integer> bigram_term_freq = new HashMap<String, Integer>();
+
+            for (BiGramIndex.Posting posting : postings)
+            {
+
+                file_name = posting.getDoc();
+                doc_names.add(file_name);
+
+                // query term
+                for (Map.Entry<String, Set<BiGramIndex.Posting>> entry_t : query_postings.entrySet())
+                {
+                    String bi_gram_t = entry_t.getKey();
+                    int num_term = 0;
+                    if (bi_gram_d.equals(bi_gram_t))
+                    {
+                        if (bigram_term_freq.containsKey(posting.getDoc())) {
+                            bigram_term_freq.put(posting.getDoc(), bigram_term_freq.get(posting.getDoc()) + 1);
+
+                        } else {
+                            bigram_term_freq.put(posting.getDoc(), 1);
+                        }
+
+                        // compute df, idf, tf, tf_idf
+                        df = (double) doc_freq;
+                        //System.out.println("DF " + df);
+                        idf = getIdf(df, num_docs);
+                        //System.out.println("IDF " + idf);
+                        tf = (double) bigram_term_freq.get(file_name)/term_count.get(file_name);
+                        //System.out.println("TF " + tf);
+                        tf_idf = getTfIdf(tf, idf);
+                        //System.out.println("TF-IDF " + tf_idf);
+                        score += Math.abs(tf_idf);
+
+                    }
+                }
+            }
+            results.put(file_name, score);
+        }
+        return results;
     }
 
 
@@ -348,6 +377,46 @@ public class App {
     public static double getTfIdf(double tf, double idf) {
         double tf_idf = tf * idf;
         return tf_idf;
+    }
+
+    // <topicid> <Q#> <documentid> <rank> <score> <run-name>
+    public static void output(Map<String, Double> map, String topic_filename)
+    {
+        int top_100 = 100;
+        int idx = 1;
+        Map<String, Double> sorted = sortByValues(map);
+        System.out.println("topic" + "\tQ0" + "\t" + "document-id" + "\t" + "rank" + "\t" + "score"  + "" + "\trun-name");
+        for(Map.Entry<String, Double> entry : sorted.entrySet())
+        {
+            if(idx <= 100)
+            {
+                String file = entry.getKey();
+                Double score = entry.getValue();
+                //System.out.println("D:" + file + " S: " + score);
+                System.out.println(topic_filename + "\tQ0" + "\t" + file + "\t" + idx + "\t" + score  + "" + "\tgroup5-experiment1");
+                idx++;
+            }
+        }
+    }
+
+    private static Map<String, Double> sortByValues(Map<String, Double> map) {
+        List list = new LinkedList(map.entrySet());
+        // Defined Custom Comparator here
+        Collections.sort(list, new Comparator() {
+            public int compare(Object o1, Object o2) {
+                return ((Comparable) ((Map.Entry) (o2)).getValue())
+                        .compareTo(((Map.Entry) (o1)).getValue());
+            }
+        });
+
+        // Here I am copying the sorted list in HashMap
+        // using LinkedHashMap to preserve the insertion order
+        HashMap sortedHashMap = new LinkedHashMap();
+        for (Iterator it = list.iterator(); it.hasNext();) {
+            Map.Entry entry = (Map.Entry) it.next();
+            sortedHashMap.put(entry.getKey(), entry.getValue());
+        }
+        return sortedHashMap;
     }
 
     public static void zipIndex(String filename, BiGramIndex bgIdx, String bigramFilename, BagOfWordsIndex bowIdx, String bowFilename) {

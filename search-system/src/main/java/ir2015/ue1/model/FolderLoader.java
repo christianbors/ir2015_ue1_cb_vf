@@ -53,7 +53,7 @@ public class FolderLoader {
         for(int i = 0; i < newsgroup.size(); i++)
         {
             res.add(newsgroup.get(i).getName());
-            System.out.println(newsgroup.get(i).getName());
+            //System.out.println(newsgroup.get(i).getName());
         }
 
         return res;

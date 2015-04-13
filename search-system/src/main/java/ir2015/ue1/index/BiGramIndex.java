@@ -11,6 +11,7 @@ import java.util.*;
  */
 public class BiGramIndex {
 
+    private int documentSize;
     private Map<String, Set<String>> textDict = new TreeMap<String, Set<String>>();
     private Map<String, Set<String>> xrefDict = new TreeMap<String, Set<String>>();
     private Map<String, Set<String>> referencesDict = new TreeMap<String, Set<String>>();
@@ -31,6 +32,326 @@ public class BiGramIndex {
     private Map<String, Set<String>> returnreceipttoDict = new TreeMap<String, Set<String>>();
     private Map<String, Set<String>> nfidDict = new TreeMap<String, Set<String>>();
     private Map<String, Set<String>> nffromDict = new TreeMap<String, Set<String>>();
+
+    public Map<String, Set<String>> getTextDict() {
+        return textDict;
+    }
+
+    public void setTextDict(Map<String, Set<String>> textDict) {
+        this.textDict = textDict;
+    }
+
+    public Map<String, Set<String>> getXrefDict() {
+        return xrefDict;
+    }
+
+    public void setXrefDict(Map<String, Set<String>> xrefDict) {
+        this.xrefDict = xrefDict;
+    }
+
+    public Map<String, Set<String>> getReferencesDict() {
+        return referencesDict;
+    }
+
+    public void setReferencesDict(Map<String, Set<String>> referencesDict) {
+        this.referencesDict = referencesDict;
+    }
+
+    public Map<String, Set<String>> getPathDict() {
+        return pathDict;
+    }
+
+    public void setPathDict(Map<String, Set<String>> pathDict) {
+        this.pathDict = pathDict;
+    }
+
+    public Map<String, Set<String>> getNewsgroupDict() {
+        return newsgroupDict;
+    }
+
+    public void setNewsgroupDict(Map<String, Set<String>> newsgroupDict) {
+        this.newsgroupDict = newsgroupDict;
+    }
+
+    public Map<String, Set<String>> getKeywordsDict() {
+        return keywordsDict;
+    }
+
+    public void setKeywordsDict(Map<String, Set<String>> keywordsDict) {
+        this.keywordsDict = keywordsDict;
+    }
+
+    public Map<String, Set<String>> getFromDict() {
+        return fromDict;
+    }
+
+    public void setFromDict(Map<String, Set<String>> fromDict) {
+        this.fromDict = fromDict;
+    }
+
+    public Map<String, Set<String>> getSubjectDict() {
+        return subjectDict;
+    }
+
+    public void setSubjectDict(Map<String, Set<String>> subjectDict) {
+        this.subjectDict = subjectDict;
+    }
+
+    public Map<String, Set<String>> getMessageidDict() {
+        return messageidDict;
+    }
+
+    public void setMessageidDict(Map<String, Set<String>> messageidDict) {
+        this.messageidDict = messageidDict;
+    }
+
+    public Map<String, Set<String>> getDateDict() {
+        return dateDict;
+    }
+
+    public void setDateDict(Map<String, Set<String>> dateDict) {
+        this.dateDict = dateDict;
+    }
+
+    public Map<String, Set<String>> getOrganizationDict() {
+        return organizationDict;
+    }
+
+    public void setOrganizationDict(Map<String, Set<String>> organizationDict) {
+        this.organizationDict = organizationDict;
+    }
+
+    public Map<String, Set<String>> getReplytoDict() {
+        return replytoDict;
+    }
+
+    public void setReplytoDict(Map<String, Set<String>> replytoDict) {
+        this.replytoDict = replytoDict;
+    }
+
+    public Map<String, Set<String>> getDistributionDict() {
+        return distributionDict;
+    }
+
+    public void setDistributionDict(Map<String, Set<String>> distributionDict) {
+        this.distributionDict = distributionDict;
+    }
+
+    public Map<String, Set<String>> getFollowuptoDict() {
+        return followuptoDict;
+    }
+
+    public void setFollowuptoDict(Map<String, Set<String>> followuptoDict) {
+        this.followuptoDict = followuptoDict;
+    }
+
+    public Map<String, Set<String>> getSenderDict() {
+        return senderDict;
+    }
+
+    public void setSenderDict(Map<String, Set<String>> senderDict) {
+        this.senderDict = senderDict;
+    }
+
+    public Map<String, Set<String>> getNntppostinghostDict() {
+        return nntppostinghostDict;
+    }
+
+    public void setNntppostinghostDict(Map<String, Set<String>> nntppostinghostDict) {
+        this.nntppostinghostDict = nntppostinghostDict;
+    }
+
+    public Map<String, Set<String>> getArticleidDict() {
+        return articleidDict;
+    }
+
+    public void setArticleidDict(Map<String, Set<String>> articleidDict) {
+        this.articleidDict = articleidDict;
+    }
+
+    public Map<String, Set<String>> getReturnreceipttoDict() {
+        return returnreceipttoDict;
+    }
+
+    public void setReturnreceipttoDict(Map<String, Set<String>> returnreceipttoDict) {
+        this.returnreceipttoDict = returnreceipttoDict;
+    }
+
+    public Map<String, Set<String>> getNfidDict() {
+        return nfidDict;
+    }
+
+    public void setNfidDict(Map<String, Set<String>> nfidDict) {
+        this.nfidDict = nfidDict;
+    }
+
+    public Map<String, Set<String>> getNffromDict() {
+        return nffromDict;
+    }
+
+    public void setNffromDict(Map<String, Set<String>> nffromDict) {
+        this.nffromDict = nffromDict;
+    }
+
+    public Map<String, Set<Posting>> getTextPostings() {
+        return textPostings;
+    }
+
+    public void setTextPostings(Map<String, Set<Posting>> textPostings) {
+        this.textPostings = textPostings;
+    }
+
+    public Map<String, Set<Posting>> getXrefPostings() {
+        return xrefPostings;
+    }
+
+    public void setXrefPostings(Map<String, Set<Posting>> xrefPostings) {
+        this.xrefPostings = xrefPostings;
+    }
+
+    public Map<String, Set<Posting>> getReferencesPostings() {
+        return referencesPostings;
+    }
+
+    public void setReferencesPostings(Map<String, Set<Posting>> referencesPostings) {
+        this.referencesPostings = referencesPostings;
+    }
+
+    public Map<String, Set<Posting>> getPathPostings() {
+        return pathPostings;
+    }
+
+    public void setPathPostings(Map<String, Set<Posting>> pathPostings) {
+        this.pathPostings = pathPostings;
+    }
+
+    public Map<String, Set<Posting>> getNewsgroupPostings() {
+        return newsgroupPostings;
+    }
+
+    public void setNewsgroupPostings(Map<String, Set<Posting>> newsgroupPostings) {
+        this.newsgroupPostings = newsgroupPostings;
+    }
+
+    public Map<String, Set<Posting>> getKeywordsPostings() {
+        return keywordsPostings;
+    }
+
+    public void setKeywordsPostings(Map<String, Set<Posting>> keywordsPostings) {
+        this.keywordsPostings = keywordsPostings;
+    }
+
+    public Map<String, Set<Posting>> getFromPostings() {
+        return fromPostings;
+    }
+
+    public void setFromPostings(Map<String, Set<Posting>> fromPostings) {
+        this.fromPostings = fromPostings;
+    }
+
+    public Map<String, Set<Posting>> getSubjectPostings() {
+        return subjectPostings;
+    }
+
+    public void setSubjectPostings(Map<String, Set<Posting>> subjectPostings) {
+        this.subjectPostings = subjectPostings;
+    }
+
+    public Map<String, Set<Posting>> getMessageidPostings() {
+        return messageidPostings;
+    }
+
+    public void setMessageidPostings(Map<String, Set<Posting>> messageidPostings) {
+        this.messageidPostings = messageidPostings;
+    }
+
+    public Map<String, Set<Posting>> getDatePostings() {
+        return datePostings;
+    }
+
+    public void setDatePostings(Map<String, Set<Posting>> datePostings) {
+        this.datePostings = datePostings;
+    }
+
+    public Map<String, Set<Posting>> getOrganizationPostings() {
+        return organizationPostings;
+    }
+
+    public void setOrganizationPostings(Map<String, Set<Posting>> organizationPostings) {
+        this.organizationPostings = organizationPostings;
+    }
+
+    public Map<String, Set<Posting>> getReplytoPostings() {
+        return replytoPostings;
+    }
+
+    public void setReplytoPostings(Map<String, Set<Posting>> replytoPostings) {
+        this.replytoPostings = replytoPostings;
+    }
+
+    public Map<String, Set<Posting>> getDistributionPostings() {
+        return distributionPostings;
+    }
+
+    public void setDistributionPostings(Map<String, Set<Posting>> distributionPostings) {
+        this.distributionPostings = distributionPostings;
+    }
+
+    public Map<String, Set<Posting>> getFollowuptoPostings() {
+        return followuptoPostings;
+    }
+
+    public void setFollowuptoPostings(Map<String, Set<Posting>> followuptoPostings) {
+        this.followuptoPostings = followuptoPostings;
+    }
+
+    public Map<String, Set<Posting>> getSenderPostings() {
+        return senderPostings;
+    }
+
+    public void setSenderPostings(Map<String, Set<Posting>> senderPostings) {
+        this.senderPostings = senderPostings;
+    }
+
+    public Map<String, Set<Posting>> getNntppostinghostPostings() {
+        return nntppostinghostPostings;
+    }
+
+    public void setNntppostinghostPostings(Map<String, Set<Posting>> nntppostinghostPostings) {
+        this.nntppostinghostPostings = nntppostinghostPostings;
+    }
+
+    public Map<String, Set<Posting>> getArticleidPostings() {
+        return articleidPostings;
+    }
+
+    public void setArticleidPostings(Map<String, Set<Posting>> articleidPostings) {
+        this.articleidPostings = articleidPostings;
+    }
+
+    public Map<String, Set<Posting>> getReturnreceipttoPostings() {
+        return returnreceipttoPostings;
+    }
+
+    public void setReturnreceipttoPostings(Map<String, Set<Posting>> returnreceipttoPostings) {
+        this.returnreceipttoPostings = returnreceipttoPostings;
+    }
+
+    public Map<String, Set<Posting>> getNfidPostings() {
+        return nfidPostings;
+    }
+
+    public void setNfidPostings(Map<String, Set<Posting>> nfidPostings) {
+        this.nfidPostings = nfidPostings;
+    }
+
+    public Map<String, Set<Posting>> getNffromPostings() {
+        return nffromPostings;
+    }
+
+    public void setNffromPostings(Map<String, Set<Posting>> nffromPostings) {
+        this.nffromPostings = nffromPostings;
+    }
 
     private Map<String, Set<Posting>> textPostings = new TreeMap<String, Set<Posting>>();
     private Map<String, Set<Posting>> xrefPostings = new TreeMap<String, Set<Posting>>();
@@ -54,10 +375,11 @@ public class BiGramIndex {
     private Map<String, Set<Posting>> nffromPostings = new TreeMap<String, Set<Posting>>();
 
     public BiGramIndex(Map<String, Newsgroup> documents) {
+        this.documentSize = documents.size();
         for (Map.Entry<String, Newsgroup> entry : documents.entrySet()) {
             Newsgroup ng = entry.getValue();
             //TODO: change split
-            String[] textWords = ng.getText().split("\\s");
+            String[] textWords = ng.getTokens().toArray(new String[0]);
             String[] xrefWords = ng.getXref().toArray(new String[0]);
             String[] refWords = ng.getReferences().toArray(new String[0]);
             String[] pathWords = ng.getPath().toArray(new String[0]);
@@ -99,6 +421,11 @@ public class BiGramIndex {
             fillIndexAndPostings(this.nfidDict, this.nfidPostings, entry.getKey(), nfidWord);
             fillIndexAndPostings(this.nffromDict, this.nffromPostings, entry.getKey(), nffromWord);
         }
+    }
+
+    public int getDocumentSize()
+    {
+        return this.documentSize;
     }
 
     private void fillIndexAndPostings(Map<String, Set<String>> index, Map<String, Set<Posting>> postings, String documentName, String[] words) {
@@ -174,13 +501,24 @@ public class BiGramIndex {
         return indexFile;
     }
 
-    class Posting {
+    public class Posting {
         final String doc;
         final int pos;
+
 
         Posting(String document, int position) {
             this.doc = document;
             this.pos = position;
+        }
+
+        public String getDoc()
+        {
+            return this.doc;
+        }
+
+        public int getPos()
+        {
+            return this.pos;
         }
     }
 }

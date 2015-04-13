@@ -73,7 +73,7 @@ public class NewsgroupTopicParser {
                     try
                     {
                         attribute = line.substring(0, line.indexOf(":"));
-                        value = line.substring(line.indexOf(":"), line.length());
+                        value = line.substring(line.indexOf(":")+1, line.length()).trim();
 
                     }
                     catch(StringIndexOutOfBoundsException e)
