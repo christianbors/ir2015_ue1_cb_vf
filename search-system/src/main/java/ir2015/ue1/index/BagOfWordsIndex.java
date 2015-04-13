@@ -146,14 +146,14 @@ public class BagOfWordsIndex {
             fillPostings(this.nfidDict, this.nfidPostings, entry.getKey(), nfidToken);
             fillPostings(this.nffromDict, this.nffromPostings, entry.getKey(), nffromToken);
         }
-//        fillIndex();
-        fillXrefIndex();
     }
 
     private void fillDictionary(Map<String, Integer> dictionary, String[] tokens) {
         for (int i = 0; i < tokens.length; ++i) {
-            if (!dictionary.containsKey(tokens[i])) {
-                dictionary.put(tokens[i], dictionary.size());
+            if (tokens[i] != null) {
+                if (!dictionary.containsKey(tokens[i])) {
+                    dictionary.put(tokens[i], dictionary.size());
+                }
             }
         }
     }
@@ -162,14 +162,12 @@ public class BagOfWordsIndex {
         postings.put(documentName, new ArrayList(Collections.nCopies(dictionary.size(), 0)));
         int occurrenceIdx = postings.size()-1;
         for (int i = 0; i < tokens.length; ++i) {
-            List<Integer> currentOccurrence = postings.get(documentName);
-            currentOccurrence.set(dictionary.get(tokens[i]),
-                    currentOccurrence.get(dictionary.get(tokens[i])) + 1);
+            if (tokens[i] != null) {
+                List<Integer> currentOccurrence = postings.get(documentName);
+                currentOccurrence.set(dictionary.get(tokens[i]),
+                        currentOccurrence.get(dictionary.get(tokens[i])) + 1);
+            }
         }
-    }
-
-    private void fillXrefIndex() {
-
     }
 
     public void writeToJSON(String filename) {

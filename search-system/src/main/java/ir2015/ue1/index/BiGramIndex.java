@@ -104,22 +104,24 @@ public class BiGramIndex {
     private void fillIndexAndPostings(Map<String, Set<String>> index, Map<String, Set<Posting>> postings, String documentName, String[] words) {
         for (int count = 0; count < words.length; ++count) {
             for (String bigram : tokenize(words[count])) {
-                Set<Posting> posting;
-                if (index.containsKey(bigram)) {
-                    // update dictionary
-                    index.get(bigram).add(words[count]);
-                    // update postings
-                    posting = postings.get(bigram);
-                } else {
-                    // create new dictionary
-                    Set<String> wordList = new TreeSet<String>();
-                    wordList.add(words[count]);
-                    index.put(bigram, wordList);
-                    // create new postings
-                    posting = new HashSet<Posting>();
+                if (bigram != null) {
+                    Set<Posting> posting;
+                    if (index.containsKey(bigram)) {
+                        // update dictionary
+                        index.get(bigram).add(words[count]);
+                        // update postings
+                        posting = postings.get(bigram);
+                    } else {
+                        // create new dictionary
+                        Set<String> wordList = new TreeSet<String>();
+                        wordList.add(words[count]);
+                        index.put(bigram, wordList);
+                        // create new postings
+                        posting = new HashSet<Posting>();
+                    }
+                    posting.add(new Posting(documentName, count));
+                    postings.put(bigram, posting);
                 }
-                posting.add(new Posting(documentName, count));
-                postings.put(bigram, posting);
             }
         }
     }
