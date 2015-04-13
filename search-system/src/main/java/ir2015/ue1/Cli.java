@@ -25,7 +25,7 @@ public class Cli {
     private boolean bigram = false;
     private boolean bow = false;
 
-    private String topicsPath = "../topics/";
+    private String topicsPath = "topics/";
     private String topicFilename = "";
 
     private final String caseFold = "case-fold";
