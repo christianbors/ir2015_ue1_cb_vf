@@ -477,7 +477,11 @@ public class BiGramIndex {
     public void writeToJSON(String filename) {
         FileWriter jsonFileWriter = null;
         try {
-            jsonFileWriter = new FileWriter(filename);
+            File outputFile = new File(filename);
+            if (!outputFile.exists()) {
+                outputFile.createNewFile();
+            }
+            jsonFileWriter = new FileWriter(outputFile);
             jsonFileWriter.write(new Gson().toJson(this));
             jsonFileWriter.flush();
             jsonFileWriter.close();

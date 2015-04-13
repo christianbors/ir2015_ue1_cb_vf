@@ -3,10 +3,7 @@ package ir2015.ue1.index;
 import com.google.gson.Gson;
 import ir2015.ue1.model.Newsgroup;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -173,7 +170,11 @@ public class BagOfWordsIndex {
     public void writeToJSON(String filename) {
         FileWriter jsonFileWriter = null;
         try {
-            jsonFileWriter = new FileWriter(filename);
+            File outputFile = new File(filename);
+            if (!outputFile.exists()) {
+                outputFile.createNewFile();
+            }
+            jsonFileWriter = new FileWriter(outputFile);
             jsonFileWriter.write(new Gson().toJson(this));
             jsonFileWriter.flush();
             jsonFileWriter.close();

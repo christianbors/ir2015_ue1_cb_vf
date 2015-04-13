@@ -25,7 +25,6 @@ public class Cli {
     private boolean bigram = false;
     private boolean bow = false;
 
-    private String topicsPath = "topics/";
     private String topicFilename = "";
 
     private final String caseFold = "case-fold";
@@ -38,31 +37,6 @@ public class Cli {
 
         options.addOption("h", "help", false, "show help.");
 
-        /*// Newsgroup indexing
-        Option indexScoring = OptionBuilder.withLongOpt("index-bag-of-words")
-                .withDescription("Index Scoring Methods: bag of words (bow), bi-gram (bg)")
-                .create("bow");
-        Option indexBiGram = OptionBuilder.withLongOpt("index-bi-gram")
-                .withDescription("Create an index with the bi-gram algorithm")
-                .create("bg");
-        options.addOption(indexBagOfWords);
-        options.addOption(indexBiGram);
-
-        // Vocabulary normalization
-        Option vocabulary = OptionBuilder.withArgName("technique")
-                .hasArg()
-                .withLongOpt("normalize")
-                .withDescription("Normalize vocabulary by applying a combination of " +
-                        "\"case-fold\", \"remove-stopwords\", \"stemming\"")
-                .create("n");
-        Option file      = OptionBuilder.withArgName("topicFilename")
-                .hasArg()
-                .withDescription("input file for search system")
-                .withLongOpt("file")
-                .create("f");
-        options.addOption(vocabulary);
-        options.addOption(file);
-*/
         // Search
         Option scoringMethod = OptionBuilder.withArgName("vocabulary")
                 .hasArgs()
@@ -84,8 +58,6 @@ public class Cli {
                 .withLongOpt("create-index")
                 .withDescription("Re-generate the index. Options: bigram (Bi-Gram), bow (Bag-of-Words)")
                 .create();
-        scoringMethod.setRequired(false);
-        indexingMethod.setRequired(true);
         options.addOption(scoringMethod);
         options.addOption(filename);
         options.addOption(indexingMethod);
@@ -118,7 +90,7 @@ public class Cli {
 
             if (cmd.hasOption("f")) {
                 topicFilename = cmd.getOptionValue("f");
-                File file = new File(topicsPath + topicFilename);
+                File file = new File(topicFilename);
                 if (!file.exists()) {
                     System.out.println(file.getAbsolutePath());
                     System.out.println("File not found: " + topicFilename);
