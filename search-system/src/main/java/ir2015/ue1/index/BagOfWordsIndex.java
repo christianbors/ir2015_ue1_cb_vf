@@ -57,7 +57,9 @@ public class BagOfWordsIndex {
     private Map<String, List<Integer>> nfidPostings = new LinkedHashMap<String, List<Integer>>();
     private Map<String, List<Integer>> nffromPostings = new LinkedHashMap<String, List<Integer>>();
 
+
     public BagOfWordsIndex(Map<String, Newsgroup> documents) {
+
         for (Map.Entry<String, Newsgroup> entry : documents.entrySet()) {
             String[] textTokens = entry.getValue().getTokens().toArray(new String[documents.size()]);
             String[] xrefTokens = entry.getValue().getXref().toArray(new String[0]);
